@@ -1,0 +1,49 @@
+storage:
+  diretorio_documentos: "./storage/documentos"
+  diretorio_metadata: "./storage/metadata"
+  diretorio_backups: "./storage/backups"
+  diretorio_exportacoes: "./storage/exportacoes"
+  diretorio_logs: "./storage/logs"
+
+upload:
+  tamanho_maximo_mb: 20
+
+hash:
+  algoritmo: "sha-256"
+
+backup:
+  formato: "zip"
+
+logging:
+  version: 1
+
+  formatters:
+    detailed:
+      format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: INFO
+      formatter: detailed
+      stream: ext://sys.stdout
+
+    file:
+      class: logging.FileHandler
+      level: DEBUG
+      formatter: detailed
+      filename: app.log
+      encoding: utf-8
+
+  loggers:
+    cofre_api:
+      level: DEBUG
+      handlers:
+        - console
+        - file
+      propagate: false
+
+  root:
+    level: WARNING
+    handlers:
+      - console
