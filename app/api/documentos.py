@@ -10,8 +10,8 @@ from repositories.json_repository import(
     buscar_por_id
 )
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-DOCUMENTOS_FILE =BASE_DIR /  "" / "documentos.json"
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
 
 router = APIRouter(
     prefix="/documentos",
