@@ -58,7 +58,7 @@ def atualizar_documento(documento_id: str, documento: Documento):
         DOCUMENTOS_FILE, documento_id, dados
     ):
         logger.warning(
-            "Tentantiva de atualizar um documento inexistente com id %s", documento_id
+            "Tentativa de atualizar um documento inexistente com id %s", documento_id
         )
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado")
     logger.info(
