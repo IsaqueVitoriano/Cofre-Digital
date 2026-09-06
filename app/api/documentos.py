@@ -7,7 +7,6 @@ from repositories.json_repository import(
     atualizar,
     remover,
     ler_arquivo_json,
-    escrever_arquivo_json,
     buscar_por_id
 )
 
@@ -48,3 +47,39 @@ def criar_documento(documento: Documento):
         "Documento cadastrado com id %s, %s", documento.id, documento.nome_original
     )
     return documento
+
+@router.put("/{documento_id}", response_model=Documento, status_code= status.HTTP_200_OK)
+def atualizar_documento(documento_id: str, documento: Documento):
+    dados = documento.model_dump(
+        mode="json"
+    )
+    dados["id"] = documento_id
+    if not atualizar(
+        DOCUMENTOS_FILE, documento_id, dados
+    ):
+        logger.warning(
+            "Tentantiva de atualizar um documento inexistente com id %s", documento_id
+        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado")
+    logger.info(
+        "Documento atualizado com id %s", documento_id
+    )
+    return dados
+
+@router.delete("/{documento_id}", status_code= status.HTTP_200_OK)
+def deletar_documento(documento_id: str):
+    if not remover(
+        DOCUMENTOS_FILE,
+        documento_id
+    ):
+        logger.warning(
+            "Tentando deletar um documento inexistente com id %s", documento_id
+        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado")
+
+    logger.info(
+        "Documento deletado com id %s", documento_id
+    )
+    return {
+        "mensagem": "Documento deletado com sucesso."
+    }
