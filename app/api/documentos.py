@@ -1,8 +1,8 @@
 from pathlib import Path
 from fastapi import APIRouter, HTTPException, status
-from core.logging_config import logger
-from models.documento import Documento
-from repositories.json_repository import(
+from app.core.logging_config import logger
+from app.models.documento import Documento
+from app.repositories.json_repository import(
     adicionar,
     atualizar,
     remover,

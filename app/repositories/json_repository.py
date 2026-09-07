@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from core.logging_config import logger
+from app.core.logging_config import logger
 
 
 def garantir_arquivo_json(caminho_arquivo: Path) -> None:
