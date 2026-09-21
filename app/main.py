@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+from app.api import documentos
 from app.core.logging_config import logger
 
 app = FastAPI(
@@ -7,3 +8,5 @@ app = FastAPI(
     description="API para gerenciamento, proteção e auditoria de logs e evidências de cibersegurança",
     version="1.0.0",
 )
+
+app.include_router(documentos.router)
