@@ -27,6 +27,18 @@ def listar_documentos():
     logger.info("Lista de documentos")
     return documentos
 
+@router.get("/{documento_id}", response_model=Documento)
+def listar_documento_por_ID(documento_id: str):
+    documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
+    if not documento:
+        logger.warning(
+            "Documento nao encontrado: %s", documento_id
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Documento nao encontrado"
+        )
+    return documento
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
 def criar_documento(
@@ -41,6 +53,9 @@ def criar_documento(
     documento_id = str(uuid4())
 
     if buscar_por_id(DOCUMENTOS_FILE, documento_id):
+        logger.warning(
+            "Tentativa de cadastrar um documento duplicado com id: %s", documento_id
+        )
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Documento ja existe",
