@@ -6,7 +6,7 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
 from starlette.responses import FileResponse
 from app.core.logging_config import logger
-from app.models.documento import Documento, NivelSeveridade
+from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao
 from app.repositories.json_repository import (
     adicionar,
     atualizar,
@@ -102,18 +102,27 @@ def criar_documento(
     return documento
 
 @router.put("/{documento_id}", response_model=Documento, status_code=status.HTTP_200_OK)
-def atualizar_documento(documento_id: str, documento: Documento):
-    dados = documento.model_dump(mode="json")
-    dados["id"] = documento_id
-    if not atualizar(DOCUMENTOS_FILE, documento_id, dados):
+def atualizar_documento(documento_id: str, documento: DocumentoAtualizacao):
+    dados_atualizacao = documento.model_dump(mode="json")
+    documento_atual = buscar_por_id(DOCUMENTOS_FILE, documento_id)
+    if not documento_atual:
         logger.warning(
             "Tentativa de atualizar um documento inexistente com id: %s", documento_id
         )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
-    logger.info("Documento atualizado com id: %s", documento_id)
-    return dados
+    documento_atual.update(dados_atualizacao)
+    atualizar(
+        DOCUMENTOS_FILE,
+        documento_id,
+        documento_atual
+    )
+    logger.info(
+        "Documento atualizado com id: %s",
+        documento_id
+    )
+    return documento_atual
 
 @router.delete("/{documento_id}", status_code=status.HTTP_200_OK)
 def deletar_documento(documento_id: str):
