@@ -1,7 +1,10 @@
+import json
+import csv
 from pathlib import Path
 from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
+from starlette.responses import FileResponse
 from app.core.logging_config import logger
 from app.models.documento import Documento, NivelSeveridade
 from app.repositories.json_repository import (
@@ -17,6 +20,7 @@ from app.services.integridade_service import calcula_hash
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
 DIRETORIO_DOCUMENTOS = BASE_DIR / "storage" / "documentos"
+EXPORTACAO_CSV = BASE_DIR / "storage" / "exportacoes" / "exportacoes.csv"
 
 router = APIRouter(prefix="/documentos", tags=["documentos"])
 
@@ -39,6 +43,38 @@ def listar_documento_por_ID(documento_id: str):
             detail="Documento nao encontrado"
         )
     return documento
+
+@router.get("/exportar/CSV")
+def exportacao_CSV():
+    with open(DOCUMENTOS_FILE, mode="r", encoding="utf-8") as file:
+        dados = json.load(file)
+    with open(EXPORTACAO_CSV, mode="w",newline='', encoding="utf-8") as file:
+        fieldnames = [
+            "id",
+            "nome_original",
+            "nome_armazenado",
+            "extensao",
+            "tipo_mime",
+            "tamanho",
+            "categoria",
+            "descricao",
+            "data_upload",
+            "sha256",
+            "origem",
+            "severidade",
+            "tipo_de_evento",
+            "data_hora_evento",
+            "sistema_de_origem"
+        ]
+        arquivo = csv.DictWriter(file, fieldnames=fieldnames)
+        arquivo.writeheader()
+        arquivo.writerows(dados)
+
+    return FileResponse(
+        path=EXPORTACAO_CSV,
+        media_type="text/csv",
+        filename="documentos.csv"
+    )
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
 def criar_documento(
