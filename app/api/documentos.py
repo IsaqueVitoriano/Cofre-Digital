@@ -31,24 +31,23 @@ def listar_documentos():
     logger.info("Lista de documentos")
     return documentos
 
+
 @router.get("/{documento_id}", response_model=Documento)
 def listar_documento_por_ID(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento:
-        logger.warning(
-            "Documento nao encontrado: %s", documento_id
-        )
+        logger.warning("Documento nao encontrado: %s", documento_id)
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Documento nao encontrado"
+            status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
     return documento
+
 
 @router.get("/exportar/CSV")
 def exportacao_CSV():
     with open(DOCUMENTOS_FILE, mode="r", encoding="utf-8") as file:
         dados = json.load(file)
-    with open(EXPORTACAO_CSV, mode="w",newline='', encoding="utf-8") as file:
+    with open(EXPORTACAO_CSV, mode="w", newline="", encoding="utf-8") as file:
         fieldnames = [
             "id",
             "nome_original",
@@ -64,17 +63,16 @@ def exportacao_CSV():
             "severidade",
             "tipo_de_evento",
             "data_hora_evento",
-            "sistema_de_origem"
+            "sistema_de_origem",
         ]
         arquivo = csv.DictWriter(file, fieldnames=fieldnames)
         arquivo.writeheader()
         arquivo.writerows(dados)
 
     return FileResponse(
-        path=EXPORTACAO_CSV,
-        media_type="text/csv",
-        filename="documentos.csv"
+        path=EXPORTACAO_CSV, media_type="text/csv", filename="documentos.csv"
     )
+
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
 def criar_documento(
@@ -135,6 +133,8 @@ def criar_documento(
         documento.nome_original,
     )
     return documento
+
+
 @router.put("/{documento_id}", response_model=Documento, status_code=status.HTTP_200_OK)
 def atualizar_documento(documento_id: str, documento: Documento):
     dados = documento.model_dump(mode="json")
@@ -203,3 +203,32 @@ def obter_hash_documento(documento_id: str):
         "hash_atual": hash_atual,
         "integro": integro,
     }
+
+
+@router.get("/{documento_id}/download", status_code=status.HTTP_200_OK)
+def baixar_documento(documento_id: str):
+    documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
+
+    if not documento:
+        logger.warning(
+            "Tentando baixar um documento inexistente com id: %s",
+            documento_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
+        )
+
+    caminho_arquivo = DIRETORIO_DOCUMENTOS / documento["nome_armazenado"]
+
+    if not caminho_arquivo.exists():
+        logger.error(
+            "Arquivo fisico nao encontrado para o documento com id: %s", documento_id
+        )
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Arquivo de documentos nao encontrado",
+        )
+
+    logger.info("Iniciando o download do documento com id: %s", documento_id)
+
+    return FileResponse(path=caminho_arquivo, filename=documento["nome_original"])
