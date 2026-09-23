@@ -1,8 +1,10 @@
 from pathlib import Path
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
 from fastapi.responses import FileResponse
+from datetime import datetime
+from uuid import uuid4
 from app.core.logging_config import logger
-from app.models.documento import Documento
+from app.models.documento import Documento, NivelSeveridade
 from app.repositories.json_repository import (
     adicionar,
     atualizar,
@@ -28,24 +30,61 @@ def listar_documentos():
 
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
-def criar_documento(documento: Documento):
-    if buscar_por_id(DOCUMENTOS_FILE, documento.id):
-        logger.warning("Tentando criar documento duplicado com id: %s", documento.id)
+def criar_documento(
+    arquivo: UploadFile = File(...),
+    categoria: str = Form(...),
+    descricao: str | None = Form(None),
+    origem: str = Form(...),
+    severidade: NivelSeveridade = Form(...),
+    tipo_de_evento: str = Form(...),
+    sistema_de_origem: str = Form(...),
+):
+    documento_id = str(uuid4())
+
+    if buscar_por_id(DOCUMENTOS_FILE, documento_id):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="Documento com esse id ja existe",
+            detail="Documento ja existe",
         )
+
+    DIRETORIO_DOCUMENTOS.mkdir(parents=True, exist_ok=True)
+
+    nome_original = arquivo.filename or "arquivo"
+    nome_armazenado = f"{nome_original}"
+    caminho = DIRETORIO_DOCUMENTOS / nome_armazenado
+
+    conteudo = arquivo.file.read()
+    with open(caminho, "wb") as file:
+        file.write(conteudo)
+
+    sha256 = calcula_hash(caminho)
+
+    documento = Documento(
+        id=documento_id,
+        nome_original=nome_original,
+        nome_armazenado=nome_armazenado,
+        extensao=Path(nome_original).suffix,
+        tipo_mime=arquivo.content_type or "application/octet-stream",
+        tamanho=len(conteudo),
+        categoria=categoria,
+        descricao=descricao,
+        data_upload=datetime.now(),
+        sha256=sha256,
+        origem=origem,
+        severidade=severidade,
+        tipo_de_evento=tipo_de_evento,
+        data_hora_evento=datetime.now(),
+        sistema_de_origem=sistema_de_origem,
+    )
+
     dados = documento.model_dump(mode="json")
     adicionar(DOCUMENTOS_FILE, dados)
-
     logger.info(
         "Documento cadastrado com id: %s, nome: %s",
         documento.id,
         documento.nome_original,
     )
     return documento
-
-
 @router.put("/{documento_id}", response_model=Documento, status_code=status.HTTP_200_OK)
 def atualizar_documento(documento_id: str, documento: Documento):
     dados = documento.model_dump(mode="json")
