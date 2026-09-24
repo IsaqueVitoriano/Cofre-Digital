@@ -39,6 +39,7 @@ def listar_documento_por_ID(documento_id: str):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
+    logger.info("Listando documento com id=%s: %s", documento_id, documento)
     return documento
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
@@ -234,6 +235,7 @@ def exportacao_CSV():
         arquivo.writeheader()
         arquivo.writerows(dados)
 
+    logger.info("Exportanto csv ...")
     return FileResponse(
         path=EXPORTACAO_CSV, media_type="text/csv", filename="documentos.csv"
     )
