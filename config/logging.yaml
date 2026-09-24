@@ -18,30 +18,48 @@ logging:
   version: 1
 
   formatters:
-    detailed:
+    app:
       format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+    atividade:
+      format: "%(asctime)s - %(name)s - %(levelname)s - acao=%(acao)s - documento_id=%(documento_id)s - documento=%(documento)s - resultado=%(resultado)s"
 
   handlers:
     console:
       class: logging.StreamHandler
       level: INFO
-      formatter: detailed
+      formatter: app
       stream: ext://sys.stdout
 
-    file:
+    app_file:
       class: logging.FileHandler
       level: DEBUG
       formatter: detailed
       filename: app.log
       encoding: utf-8
 
+    atividades_file:
+      class: logging.FileHandler
+      level: INFO
+      formatter: detailed
+      filename: atividade.log
+      encoding: utf-8
+
+
   loggers:
     cofre_api:
       level: DEBUG
       handlers:
         - console
-        - file
+        - app_file
       propagate: false
+
+    cofre_atividades:
+      level: INFO
+      handlers:
+        - atividades_file
+      propagate: false
+
 
   root:
     level: WARNING
