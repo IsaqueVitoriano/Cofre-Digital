@@ -45,3 +45,12 @@ class Documento(BaseModel):
     data_hora_evento: datetime
 
     sistema_de_origem: str
+
+class DocumentoAtualizacao(BaseModel):
+    categoria: str
+    descricao: str | None = None
+    origem: str
+    severidade: NivelSeveridade
+    tipo_de_evento: str
+    sistema_de_origem: str
+
