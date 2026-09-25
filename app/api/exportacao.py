@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from fastapi import APIRouter
 from starlette.responses import FileResponse
-from app.core.logging_config import logger
+from app.core.logging_config import logger_api
 
 router = APIRouter(
     prefix="/exportacao",
@@ -40,7 +40,7 @@ def exportacao_csv():
         arquivo.writeheader()
         arquivo.writerows(dados)
 
-    logger.info("Exportanto csv ...")
+    logger_api.info("Exportanto csv ...")
     return FileResponse(
         path=EXPORTACAO_CSV, media_type="text/csv", filename="documentos.csv"
     )

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from pathlib import Path
-from app.core.logging_config import logger
+from app.core.logging_config import logger_api
 from app.repositories.json_repository import (
     buscar_por_id
 )
@@ -22,7 +22,7 @@ def obter_hash_documento(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
 
     if not documento:
-        logger.warning(
+        logger_api.warning(
             "Tentando verificar integridade de um documento inexistente com id: %s",
             documento_id,
         )
@@ -33,7 +33,7 @@ def obter_hash_documento(documento_id: str):
     caminho_arquivo = DIRETORIO_DOCUMENTOS / documento["nome_armazenado"]
 
     if not caminho_arquivo.exists():
-        logger.error(
+        logger_api.error(
             "Arquivo fisico nao encontrado para o documento com id: %s", documento_id
         )
         raise HTTPException(
@@ -45,7 +45,7 @@ def obter_hash_documento(documento_id: str):
     hash_original = documento.get("sha256")
     integro = hash_atual == hash_original
 
-    logger.info(
+    logger_api.info(
         "Verificacao de integridade concluida para o documento com id: %s", documento_id
     )
 
