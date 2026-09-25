@@ -16,7 +16,7 @@ config["handlers"]["atividades_file"]["filename"]= str(BASE_DIR / "storage" / "l
 
 logging.config.dictConfig(config)
 
-logger = logging.getLogger("cofre_api")
-atividades_logger = logging.getLogger("cofre_atividades")
+logger_api = logging.getLogger("logger_api")
+logger_atividades = logging.getLogger("logger_atividades")
 
-logger.info("Sistema de loggin inicializado com sucesso!")
+logger_api.info("Sistema de loggin inicializado com sucesso!")
