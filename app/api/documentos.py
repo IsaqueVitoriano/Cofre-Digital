@@ -8,6 +8,8 @@ from starlette.responses import FileResponse
 
 from app.core.logging_config import logger_api, logger_atividades
 
+from models.acoes_enum import ResultadoAtividade, AcaoAtividade
+
 from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao
 from app.repositories.json_repository import (
     adicionar,
@@ -30,18 +32,17 @@ router = APIRouter(prefix="/documentos", tags=["documentos"])
 @router.get("/", response_model=list[Documento])
 def listar_documentos():
     documentos = ler_arquivo_json(DOCUMENTOS_FILE)
-    logger_api.info("Documentos registrados:")
+    logger_api.info("%s documentos foram listados", len(documentos))
     return documentos
 
 @router.get("/{documento_id}", response_model=Documento)
-def listar_documento_por_ID(documento_id: str):
+def listar_documento_por_id(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento:
         logger_api.warning("Documento nao encontrado: %s", documento_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
-    logger_api.info("Listando documento com id=%s: %s", documento_id, documento)
     return documento
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
@@ -96,12 +97,26 @@ def criar_documento(
     )
 
     dados = documento.model_dump(mode="json")
-    adicionar(DOCUMENTOS_FILE, dados)
-    logger_api.info(
-        "Documento cadastrado com id: %s, nome: %s",
-        documento.id,
-        documento.nome_original,
+
+    try:
+        adicionar(DOCUMENTOS_FILE, dados)
+    except OSError:
+        logger_api.warning(
+            "Falha ao adicionar documento: %s", documento_id
+        )
+        raise
+
+
+    logger_atividades.info(
+        "Documento criado",
+        extra={
+            "acao": AcaoAtividade.DOCUMENT_CREATE.value,
+            "documento_id": documento.id,
+            "documento": documento.nome_original,
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
     )
+
     return documento
 
 @router.put("/{documento_id}", response_model=Documento, status_code=status.HTTP_200_OK)
@@ -115,14 +130,22 @@ def atualizar_documento(documento_id: str, documento: DocumentoAtualizacao):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
-    documento_atual.update(dados_atualizacao)
-    atualizar(
-        DOCUMENTOS_FILE,
-        documento_id,
-        documento_atual
-    )
+
+    try:
+        documento_atual.update(dados_atualizacao)
+        atualizar(
+            DOCUMENTOS_FILE,
+            documento_id,
+            documento_atual
+        )
+    except OSError:
+        logger_api.warning(
+            "Erro ao atualizar documento: %s", documento_id
+        )
+        raise
+
     logger_api.info(
-        "Documento atualizado com id: %s",
+        "Documento de id: %s foi atualizado",
         documento_id
     )
     return documento_atual
@@ -137,12 +160,30 @@ def deletar_documento(documento_id: str):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
-    remover(DOCUMENTOS_FILE, documento_id)
+
+    try:
+        remover(DOCUMENTOS_FILE, documento_id)
+    except FileNotFoundError:
+        logger_api.warning(
+            "Falha ao remover documento: %s, não foi encontrado", documento_id
+        )
+        raise
+
     caminho = DIRETORIO_DOCUMENTOS / documento["nome_original"]
+
     if caminho.exists():
         caminho.unlink()
 
-    logger_api.info("Documento deletado com o nome: %s e com ID: %s", documento["nome_original"], documento_id)
+    logger_atividades.info(
+        "Documento deletado",
+        extra={
+            "acao": AcaoAtividade.DOCUMENT_DELETE.value,
+            "documento_id": documento["id"],
+            "documento": documento["nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
+    )
+
     return {"mensagem": "Documento deletado com sucesso."}
 
 @router.get("/{documento_id}/integridade", status_code=status.HTTP_200_OK)
@@ -173,8 +214,14 @@ def obter_hash_documento(documento_id: str):
     hash_original = documento.get("sha256")
     integro = hash_atual == hash_original
 
-    logger_api.info(
-        "Verificacao de integridade concluida para o documento com id: %s", documento_id
+    logger_atividades.info(
+        "Verificacao de integridade",
+        extra={
+            "acao": AcaoAtividade.INTEGRITY_CHECK.value,
+            "documento_id": documento["id"],
+            "documento": documento["nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
     )
 
     return {
@@ -208,11 +255,19 @@ def baixar_documento(documento_id: str):
             detail="Arquivo de documentos nao encontrado",
         )
 
-    logger_api.info("Iniciando o download do documento com id: %s", documento_id)
+    logger_atividades.info(
+        "Download concluido",
+        extra={
+            "acao": AcaoAtividade.DOCUMENT_DOWNLOAD.value,
+            "documento_id": documento["id"],
+            "documento": ["documento.nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
+    )
     return FileResponse(path=caminho_arquivo, filename=documento["nome_original"])
 
 @router.get("/exportar/CSV")
-def exportacao_CSV():
+def exportacao_csv():
     with open(DOCUMENTOS_FILE, mode="r", encoding="utf-8") as file:
         dados = json.load(file)
     with open(EXPORTACAO_CSV, mode="w", newline="", encoding="utf-8") as file:
@@ -233,11 +288,25 @@ def exportacao_CSV():
             "data_hora_evento",
             "sistema_de_origem",
         ]
-        arquivo = csv.DictWriter(file, fieldnames=fieldnames)
-        arquivo.writeheader()
-        arquivo.writerows(dados)
 
-    logger_api.info("Exportanto csv ...")
+        try:
+            arquivo = csv.DictWriter(file, fieldnames=fieldnames)
+            arquivo.writeheader()
+            arquivo.writerows(dados)
+        except OSError:
+            logger_api.warning(
+                "Falha ao escrever no arquivo"
+            )
+            raise
+
+    logger_atividades.info("Exportacao via csv concluida",
+                        extra={
+                            "acao": AcaoAtividade.DOCUMENT_UPLOAD.value,
+                            "documento_id": "-",
+                            "documento": "todos",
+                            "resultado": ResultadoAtividade.SUCCESS.value
+                        })
+
     return FileResponse(
         path=EXPORTACAO_CSV, media_type="text/csv", filename="documentos.csv"
     )
