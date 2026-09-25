@@ -19,4 +19,4 @@ logging.config.dictConfig(config)
 logger_api = logging.getLogger("logger_api")
 logger_atividades = logging.getLogger("logger_atividades")
 
-logger_api.info("Sistema de loggin inicializado com sucesso!")
+logger_api.info("Sistema de logging inicializado com sucesso!")

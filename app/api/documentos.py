@@ -30,7 +30,7 @@ router = APIRouter(prefix="/documentos", tags=["documentos"])
 @router.get("/", response_model=list[Documento])
 def listar_documentos():
     documentos = ler_arquivo_json(DOCUMENTOS_FILE)
-    logger_api.info("Lista de documentos")
+    logger_api.info("Documentos registrados:")
     return documentos
 
 @router.get("/{documento_id}", response_model=Documento)
