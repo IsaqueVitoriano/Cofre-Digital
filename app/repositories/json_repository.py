@@ -12,7 +12,7 @@ def garantir_arquivo_json(caminho_arquivo: Path) -> None:
         with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
             json.dump([], arquivo, ensure_ascii=False, indent=4)
 
-    logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
+        logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
 
 
 def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
@@ -24,8 +24,7 @@ def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
 
     except json.JSONDecodeError as erro:
         logger_api.error("O JSON é inválido em %s, o erro: %s", caminho_arquivo.name, erro)
-
-    raise ValueError(f"{caminho_arquivo.name} contém JSON inválido.")
+        raise ValueError(f"{caminho_arquivo.name} contém JSON inválido.")
 
 
 def escrever_arquivo_json(caminho_arquivo: Path, dados: list[dict[str, Any]]) -> None:
