@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException, status
 from pathlib import Path
-from app.core.logging_config import logger_api
+from app.core.logging_config import logger_api, logger_atividades
 from app.repositories.json_repository import (
     buscar_por_id
 )
 from app.services.integridade_service import calcula_hash
+from models.acoes_enum import AcaoAtividade, ResultadoAtividade
 
 router = APIRouter(
     prefix="/integridade",
@@ -47,6 +48,16 @@ def obter_hash_documento(documento_id: str):
 
     logger_api.info(
         "Verificacao de integridade concluida para o documento com id: %s", documento_id
+    )
+
+    logger_atividades.info(
+        "Verificacao de integridade",
+        extra={
+            "acao": AcaoAtividade.INTEGRITY_CHECK.value,
+            "documento_id": documento["id"],
+            "documento": documento["nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
     )
 
     return {
