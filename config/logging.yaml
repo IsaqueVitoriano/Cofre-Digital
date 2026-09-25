@@ -34,29 +34,30 @@ logging:
     app_file:
       class: logging.FileHandler
       level: DEBUG
-      formatter: detailed
+      formatter: app
       filename: app.log
       encoding: utf-8
 
     atividades_file:
       class: logging.FileHandler
       level: INFO
-      formatter: detailed
+      formatter: atividade
       filename: atividade.log
       encoding: utf-8
 
 
   loggers:
-    cofre_api:
+    logger_api:
       level: DEBUG
       handlers:
         - console
         - app_file
       propagate: false
 
-    cofre_atividades:
+    logger_atividades:
       level: INFO
       handlers:
+        - console
         - atividades_file
       propagate: false
 
