@@ -3,8 +3,7 @@ import json
 from pathlib import Path
 from fastapi import APIRouter
 from starlette.responses import FileResponse
-from app.core.logging_config import logger_api
-from core.logging_config import logger_atividades
+from core.logging_config import logger_api, logger_atividades
 from models.acoes_enum import AcaoAtividade, ResultadoAtividade
 
 router = APIRouter(
@@ -51,7 +50,7 @@ def exportacao_csv():
 
     logger_atividades.info("Exportacao via csv concluida",
                            extra={
-                               "acao": AcaoAtividade.DOCUMENT_UPLOAD.value,
+                               "acao": AcaoAtividade.EXPORT_DOCUMENTS.value,
                                "documento_id": "-",
                                "documento": "todos",
                                "resultado": ResultadoAtividade.SUCCESS.value
