@@ -4,6 +4,8 @@ from pathlib import Path
 from fastapi import APIRouter
 from starlette.responses import FileResponse
 from app.core.logging_config import logger_api
+from core.logging_config import logger_atividades
+from models.acoes_enum import AcaoAtividade, ResultadoAtividade
 
 router = APIRouter(
     prefix="/exportacao",
@@ -36,11 +38,25 @@ def exportacao_csv():
             "data_hora_evento",
             "sistema_de_origem",
         ]
-        arquivo = csv.DictWriter(file, fieldnames=fieldnames)
-        arquivo.writeheader()
-        arquivo.writerows(dados)
 
-    logger_api.info("Exportanto csv ...")
+        try:
+            arquivo = csv.DictWriter(file, fieldnames=fieldnames)
+            arquivo.writeheader()
+            arquivo.writerows(dados)
+        except OSError:
+            logger_api.warning(
+                "Falha ao escrever no arquivo"
+            )
+            raise
+
+    logger_atividades.info("Exportacao via csv concluida",
+                           extra={
+                               "acao": AcaoAtividade.DOCUMENT_UPLOAD.value,
+                               "documento_id": "-",
+                               "documento": "todos",
+                               "resultado": ResultadoAtividade.SUCCESS.value
+                           })
+
     return FileResponse(
         path=EXPORTACAO_CSV, media_type="text/csv", filename="documentos.csv"
     )
