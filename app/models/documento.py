@@ -47,10 +47,17 @@ class Documento(BaseModel):
     sistema_de_origem: str
 
 class DocumentoAtualizacao(BaseModel):
+    # Metadados de Atualizacao
+
     categoria: str
+
     descricao: str | None = None
+
     origem: str
+
     severidade: NivelSeveridade
+
     tipo_de_evento: str
+
     sistema_de_origem: str
 

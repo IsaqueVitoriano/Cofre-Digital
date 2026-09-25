@@ -1,10 +1,7 @@
-import json
-import csv
 from pathlib import Path
 from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
-from starlette.responses import FileResponse
 from app.core.logging_config import logger
 from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao
 from app.repositories.json_repository import (
@@ -20,8 +17,6 @@ from app.services.integridade_service import calcula_hash
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
 DIRETORIO_DOCUMENTOS = BASE_DIR / "storage" / "documentos"
-EXPORTACAO_CSV = BASE_DIR / "storage" / "exportacoes" / "exportacoes.csv"
-
 router = APIRouter(prefix="/documentos", tags=["documentos"])
 
 
@@ -139,101 +134,5 @@ def deletar_documento(documento_id: str):
     if caminho.exists():
         caminho.unlink()
 
-    logger.info("Documento deletado com o nome: %s e com ID: %s", documento["nome_original"], documento_id)
+    logger.info("Documento deletado com o nome: %s e com ID: %s", documento["nome_armazenado"], documento_id)
     return {"mensagem": "Documento deletado com sucesso."}
-
-@router.get("/{documento_id}/integridade", status_code=status.HTTP_200_OK)
-def obter_hash_documento(documento_id: str):
-    documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
-
-    if not documento:
-        logger.warning(
-            "Tentando verificar integridade de um documento inexistente com id: %s",
-            documento_id,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
-        )
-
-    caminho_arquivo = DIRETORIO_DOCUMENTOS / documento["nome_armazenado"]
-
-    if not caminho_arquivo.exists():
-        logger.error(
-            "Arquivo fisico nao encontrado para o documento com id: %s", documento_id
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Arquivo de documentos nao encontrado",
-        )
-
-    hash_atual = calcula_hash(caminho_arquivo)
-    hash_original = documento.get("sha256")
-    integro = hash_atual == hash_original
-
-    logger.info(
-        "Verificacao de integridade concluida para o documento com id: %s", documento_id
-    )
-
-    return {
-        "id": documento["id"],
-        "nome": documento["nome_original"],
-        "hash_original": hash_original,
-        "hash_atual": hash_atual,
-        "integro": integro,
-    }
-
-@router.get("/{documento_id}/download", status_code=status.HTTP_200_OK)
-def baixar_documento(documento_id: str):
-    documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
-    if not documento:
-        logger.warning(
-            "Tentando baixar um documento inexistente com id: %s",
-            documento_id,
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
-        )
-
-    caminho_arquivo = DIRETORIO_DOCUMENTOS / documento["nome_armazenado"]
-
-    if not caminho_arquivo.exists():
-        logger.error(
-            "Arquivo fisico nao encontrado para o documento com id: %s", documento_id
-        )
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Arquivo de documentos nao encontrado",
-        )
-
-    logger.info("Iniciando o download do documento com id: %s", documento_id)
-    return FileResponse(path=caminho_arquivo, filename=documento["nome_original"])
-
-@router.get("/exportar/CSV")
-def exportacao_CSV():
-    with open(DOCUMENTOS_FILE, mode="r", encoding="utf-8") as file:
-        dados = json.load(file)
-    with open(EXPORTACAO_CSV, mode="w", newline="", encoding="utf-8") as file:
-        fieldnames = [
-            "id",
-            "nome_original",
-            "nome_armazenado",
-            "extensao",
-            "tipo_mime",
-            "tamanho",
-            "categoria",
-            "descricao",
-            "data_upload",
-            "sha256",
-            "origem",
-            "severidade",
-            "tipo_de_evento",
-            "data_hora_evento",
-            "sistema_de_origem",
-        ]
-        arquivo = csv.DictWriter(file, fieldnames=fieldnames)
-        arquivo.writeheader()
-        arquivo.writerows(dados)
-
-    return FileResponse(
-        path=EXPORTACAO_CSV, media_type="text/csv", filename="documentos.csv"
-    )
