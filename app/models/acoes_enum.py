@@ -7,6 +7,7 @@ class AcaoAtividade(str, Enum):
     DOCUMENT_DELETE = "DOCUMENT_DELETE"
     DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"
     DOCUMENT_DOWNLOAD = "DOCUMENT_DOWNLOAD"
+    INTEGRITY_CHECK = "INTEGRITY_CHECK"
 
 class ResultadoAtividade(str, Enum):
     SUCCESS = "SUCCESS"
