@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from app.core.logging_config import logger
+from app.core.logging_config import logger_api
 
 
 def garantir_arquivo_json(caminho_arquivo: Path) -> None:
@@ -12,7 +12,7 @@ def garantir_arquivo_json(caminho_arquivo: Path) -> None:
         with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
             json.dump([], arquivo, ensure_ascii=False, indent=4)
 
-    logger.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
+    logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
 
 
 def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
@@ -23,7 +23,7 @@ def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
             return json.load(arquivo)
 
     except json.JSONDecodeError as erro:
-        logger.error("O JSON é inválido em %s, o erro: %s", caminho_arquivo.name, erro)
+        logger_api.error("O JSON é inválido em %s, o erro: %s", caminho_arquivo.name, erro)
 
     raise ValueError(f"{caminho_arquivo.name} contém JSON inválido.")
 
@@ -34,7 +34,7 @@ def escrever_arquivo_json(caminho_arquivo: Path, dados: list[dict[str, Any]]) ->
     with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
         json.dump(dados, arquivo, ensure_ascii=False, indent=4)
 
-    logger.debug(
+    logger_api.debug(
         "O arquivo %s foi atualizado com %d registro(s)",
         caminho_arquivo.name,
         len(dados),
