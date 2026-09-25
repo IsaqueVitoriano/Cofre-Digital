@@ -5,7 +5,9 @@ from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
 from starlette.responses import FileResponse
-from app.core.logging_config import logger
+
+from app.core.logging_config import logger_api, logger_atividades
+
 from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao
 from app.repositories.json_repository import (
     adicionar,
@@ -28,18 +30,18 @@ router = APIRouter(prefix="/documentos", tags=["documentos"])
 @router.get("/", response_model=list[Documento])
 def listar_documentos():
     documentos = ler_arquivo_json(DOCUMENTOS_FILE)
-    logger.info("Lista de documentos")
+    logger_api.info("Lista de documentos")
     return documentos
 
 @router.get("/{documento_id}", response_model=Documento)
 def listar_documento_por_ID(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento:
-        logger.warning("Documento nao encontrado: %s", documento_id)
+        logger_api.warning("Documento nao encontrado: %s", documento_id)
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
-    logger.info("Listando documento com id=%s: %s", documento_id, documento)
+    logger_api.info("Listando documento com id=%s: %s", documento_id, documento)
     return documento
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
@@ -55,7 +57,7 @@ def criar_documento(
     documento_id = str(uuid4())
 
     if buscar_por_id(DOCUMENTOS_FILE, documento_id):
-        logger.warning(
+        logger_api.warning(
             "Tentativa de cadastrar um documento duplicado com id: %s", documento_id
         )
         raise HTTPException(
@@ -95,7 +97,7 @@ def criar_documento(
 
     dados = documento.model_dump(mode="json")
     adicionar(DOCUMENTOS_FILE, dados)
-    logger.info(
+    logger_api.info(
         "Documento cadastrado com id: %s, nome: %s",
         documento.id,
         documento.nome_original,
@@ -107,7 +109,7 @@ def atualizar_documento(documento_id: str, documento: DocumentoAtualizacao):
     dados_atualizacao = documento.model_dump(mode="json")
     documento_atual = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento_atual:
-        logger.warning(
+        logger_api.warning(
             "Tentativa de atualizar um documento inexistente com id: %s", documento_id
         )
         raise HTTPException(
@@ -119,7 +121,7 @@ def atualizar_documento(documento_id: str, documento: DocumentoAtualizacao):
         documento_id,
         documento_atual
     )
-    logger.info(
+    logger_api.info(
         "Documento atualizado com id: %s",
         documento_id
     )
@@ -129,7 +131,7 @@ def atualizar_documento(documento_id: str, documento: DocumentoAtualizacao):
 def deletar_documento(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento:
-        logger.warning(
+        logger_api.warning(
             "Tentando deletar um documento inexistente com id: %s", documento_id
         )
         raise HTTPException(
@@ -140,7 +142,7 @@ def deletar_documento(documento_id: str):
     if caminho.exists():
         caminho.unlink()
 
-    logger.info("Documento deletado com o nome: %s e com ID: %s", documento["nome_original"], documento_id)
+    logger_api.info("Documento deletado com o nome: %s e com ID: %s", documento["nome_original"], documento_id)
     return {"mensagem": "Documento deletado com sucesso."}
 
 @router.get("/{documento_id}/integridade", status_code=status.HTTP_200_OK)
@@ -148,7 +150,7 @@ def obter_hash_documento(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
 
     if not documento:
-        logger.warning(
+        logger_api.warning(
             "Tentando verificar integridade de um documento inexistente com id: %s",
             documento_id,
         )
@@ -159,7 +161,7 @@ def obter_hash_documento(documento_id: str):
     caminho_arquivo = DIRETORIO_DOCUMENTOS / documento["nome_armazenado"]
 
     if not caminho_arquivo.exists():
-        logger.error(
+        logger_api.error(
             "Arquivo fisico nao encontrado para o documento com id: %s", documento_id
         )
         raise HTTPException(
@@ -171,7 +173,7 @@ def obter_hash_documento(documento_id: str):
     hash_original = documento.get("sha256")
     integro = hash_atual == hash_original
 
-    logger.info(
+    logger_api.info(
         "Verificacao de integridade concluida para o documento com id: %s", documento_id
     )
 
@@ -187,7 +189,7 @@ def obter_hash_documento(documento_id: str):
 def baixar_documento(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento:
-        logger.warning(
+        logger_api.warning(
             "Tentando baixar um documento inexistente com id: %s",
             documento_id,
         )
@@ -198,7 +200,7 @@ def baixar_documento(documento_id: str):
     caminho_arquivo = DIRETORIO_DOCUMENTOS / documento["nome_armazenado"]
 
     if not caminho_arquivo.exists():
-        logger.error(
+        logger_api.error(
             "Arquivo fisico nao encontrado para o documento com id: %s", documento_id
         )
         raise HTTPException(
@@ -206,7 +208,7 @@ def baixar_documento(documento_id: str):
             detail="Arquivo de documentos nao encontrado",
         )
 
-    logger.info("Iniciando o download do documento com id: %s", documento_id)
+    logger_api.info("Iniciando o download do documento com id: %s", documento_id)
     return FileResponse(path=caminho_arquivo, filename=documento["nome_original"])
 
 @router.get("/exportar/CSV")
@@ -235,7 +237,7 @@ def exportacao_CSV():
         arquivo.writeheader()
         arquivo.writerows(dados)
 
-    logger.info("Exportanto csv ...")
+    logger_api.info("Exportanto csv ...")
     return FileResponse(
         path=EXPORTACAO_CSV, media_type="text/csv", filename="documentos.csv"
     )
