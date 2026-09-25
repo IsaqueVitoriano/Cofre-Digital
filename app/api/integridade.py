@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status
 from pathlib import Path
-from app.core.logging_config import logger_api, logger_atividades
+from core.logging_config import logger_api, logger_atividades
 from app.repositories.json_repository import (
     buscar_por_id
 )
