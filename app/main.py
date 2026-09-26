@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from app.api import consultas, monitoramento
 from app.api import documentos, exportacao, download, integridade
 
 app = FastAPI(
@@ -7,6 +8,11 @@ app = FastAPI(
     version="1.0.0",
 )
 
+# Rotas fixas
+app.include_router(consultas.router)
+app.include_router(monitoramento.router)
+
+# Rotas dinâmicas
 app.include_router(documentos.router)
 app.include_router(exportacao.router)
 app.include_router(download.router)
