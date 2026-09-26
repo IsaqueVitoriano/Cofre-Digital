@@ -2,9 +2,11 @@ from fastapi import APIRouter, HTTPException, status
 from app.repositories.json_repository import (
     buscar_por_id
 )
-from app.core.logging_config import logger
+from app.core.logging_config import logger_api, logger_atividades
 from pathlib import Path
 from starlette.responses import FileResponse
+
+from app.models.acoes_enum import AcaoAtividade, ResultadoAtividade
 
 router = APIRouter(
     prefix="/download",
@@ -20,7 +22,7 @@ DIRETORIO_DOCUMENTOS = BASE_DIR / "storage" / "documentos"
 def baixar_documento(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento:
-        logger.warning(
+        logger_api.warning(
             "Tentando baixar um documento inexistente com id: %s",
             documento_id,
         )
@@ -31,7 +33,7 @@ def baixar_documento(documento_id: str):
     caminho_arquivo = DIRETORIO_DOCUMENTOS / documento["nome_armazenado"]
 
     if not caminho_arquivo.exists():
-        logger.error(
+        logger_api.error(
             "Arquivo fisico nao encontrado para o documento com id: %s", documento_id
         )
         raise HTTPException(
@@ -39,5 +41,14 @@ def baixar_documento(documento_id: str):
             detail="Arquivo de documentos nao encontrado",
         )
 
-    logger.info("Iniciando o download do documento com id: %s", documento_id)
+    logger_atividades.info(
+        "Download concluido",
+        extra={
+            "acao": AcaoAtividade.DOCUMENT_DOWNLOAD.value,
+            "documento_id": documento["id"],
+            "documento": ["documento.nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
+    )
+
     return FileResponse(path=caminho_arquivo, filename=documento["nome_original"])

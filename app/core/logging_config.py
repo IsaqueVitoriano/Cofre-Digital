@@ -11,9 +11,12 @@ with open(LOGGING_FILE, 'r', encoding="utf-8") as file:
 
 config= config["logging"]
 
-config["handlers"]["file"]["filename"]= str(BASE_DIR / "storage" / "logs" / "app.log")
+config["handlers"]["app_file"]["filename"]= str(BASE_DIR / "storage" / "logs" / "app.log")
+config["handlers"]["atividades_file"]["filename"]= str(BASE_DIR / "storage" / "logs" / "atividade.log")
 
 logging.config.dictConfig(config)
 
-logger = logging.getLogger("cofre_api")
-logger.info("Sistema de loggin inicializado com sucesso!")
+logger_api = logging.getLogger("logger_api")
+logger_atividades = logging.getLogger("logger_atividades")
+
+logger_api.info("Sistema de logging inicializado com sucesso!")
