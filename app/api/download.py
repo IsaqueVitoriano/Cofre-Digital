@@ -6,7 +6,7 @@ from app.core.logging_config import logger_api, logger_atividades
 from pathlib import Path
 from starlette.responses import FileResponse
 
-from models.acoes_enum import AcaoAtividade, ResultadoAtividade
+from app.models.acoes_enum import AcaoAtividade, ResultadoAtividade
 
 router = APIRouter(
     prefix="/download",

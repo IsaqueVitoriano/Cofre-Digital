@@ -8,7 +8,7 @@ from starlette.responses import FileResponse
 
 from app.core.logging_config import logger_api, logger_atividades
 
-from models.acoes_enum import ResultadoAtividade, AcaoAtividade
+from app.models.acoes_enum import ResultadoAtividade, AcaoAtividade
 
 from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao
 from app.repositories.json_repository import (
