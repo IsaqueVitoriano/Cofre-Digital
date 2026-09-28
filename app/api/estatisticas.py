@@ -1,10 +1,8 @@
 import json
 from pathlib import Path
-from typing import Any
 
 from fastapi import APIRouter
 
-from models.documento import Documento
 from models.estatistica import Estatistica
 
 router = APIRouter(prefix="/documentos", tags=["estatisticas"])
@@ -17,8 +15,8 @@ def exibir_estatisticas_grafico():
     estatisticas = Estatistica(
         total_documentos=qtd_documentos_json(),
         espaco_ocupado_bytes=qtd_espaco_ocupado_bytes(),
-        quantidade_documentos=,
-        quantidade_documentos_categoria=,
+        quantidade_documentos=documentos_por_extensao(),
+        quantidade_documentos_categoria=documentos_por_categoria(),
         dias_mais_upload=,
         dias_mais_download=,
     )
@@ -33,10 +31,28 @@ def qtd_documentos_json() -> int:
 def qtd_espaco_ocupado_bytes() -> int:
     tot_tamanho_bytes = 0
     with open(DOCUMENTOS_FILE, 'r', encoding="utf-8") as file:
-        documentos_json = json.load(file)
-        for documento in documentos_json:
-            tot_tamanho_bytes+= documento.tamanho
+        for documento in json.load(file):
+            tot_tamanho_bytes+= documento["tamanho"]
 
     return tot_tamanho_bytes
 
-def documentos_por_tipo() -> dict:
+def documentos_por_extensao() -> dict[str, int]:
+    extensao_dict: dict[str,int] = {}
+
+    with (open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file):
+
+        for documento in json.load(file):
+            extensao = documento["extensao"]
+            extensao_dict[extensao] = extensao_dict.get(extensao, 0)+1
+
+    return extensao_dict
+
+def documentos_por_categoria() -> dict[str, int]:
+    categoria_dict: dict[str, int] = {}
+
+    with (open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file):
+        for documento in json.load(file):
+            categoria = documento["categoria"]
+            categoria_dict[categoria] = categoria_dict.get(categoria, 0) + 1
+
+    return categoria_dict
