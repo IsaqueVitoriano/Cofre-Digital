@@ -22,7 +22,7 @@ def exibir_estatisticas():
         espaco_ocupado_bytes=qtd_espaco_ocupado_bytes(),
         quantidade_documentos=documentos_por_extensao(),
         quantidade_documentos_categoria=documentos_por_categoria(),
-        dias_mais_download=maior_ocorrencia_download(),
+        dias_de_mais_download=maior_ocorrencia_download(),
         quantidade_documentos_severidade_critica=qtd_documentos_severidade_critica()
     )
 
