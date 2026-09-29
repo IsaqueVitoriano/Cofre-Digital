@@ -1,9 +1,11 @@
 import json
-from pathlib import Path
 from datetime import datetime
+from pathlib import Path
+
 from fastapi import APIRouter
 
 from core.logging_config import logger_api
+from models.documento import NivelSeveridade
 from models.estatistica import Estatistica
 
 router = APIRouter(prefix="/documentos", tags=["estatisticas"])
@@ -13,7 +15,7 @@ DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
 ATIVIDADE_LOG_FILE = BASE_DIR / "storage" / "logs" / "atividade.log"
 APP_LOG_FILE = BASE_DIR / "storage" / "logs" / "app.log"
 
-@router.get("/")
+@router.get("/", response_model=Estatistica)
 def exibir_estatisticas_grafico():
     estatisticas = Estatistica(
         total_documentos=qtd_documentos_json(),
@@ -21,8 +23,10 @@ def exibir_estatisticas_grafico():
         quantidade_documentos=documentos_por_extensao(),
         quantidade_documentos_categoria=documentos_por_categoria(),
         dias_mais_download=maior_ocorrencia_download(),
+        quantidade_documentos_severidade_critica=qtd_documentos_severidade_critica()
     )
 
+    return estatisticas
 
 def qtd_documentos_json() -> int:
     with open(DOCUMENTOS_FILE, 'r', encoding="utf-8") as file:
@@ -41,8 +45,7 @@ def qtd_espaco_ocupado_bytes() -> int:
 def documentos_por_extensao() -> dict[str, int]:
     extensao_dict: dict[str,int] = {}
 
-    with (open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file):
-
+    with open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file:
         for documento in json.load(file):
             extensao = documento["extensao"]
             extensao_dict[extensao] = extensao_dict.get(extensao, 0)+1
@@ -52,7 +55,7 @@ def documentos_por_extensao() -> dict[str, int]:
 def documentos_por_categoria() -> dict[str, int]:
     categoria_dict: dict[str, int] = {}
 
-    with (open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file):
+    with open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file:
         for documento in json.load(file):
             categoria = documento["categoria"]
             categoria_dict[categoria] = categoria_dict.get(categoria, 0) + 1
@@ -88,3 +91,14 @@ def maior_ocorrencia_download() -> str | None:
     )
 
     return dia
+
+def qtd_documentos_severidade_critica():
+    qtd_docs_criticos = 0
+
+    with open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file:
+
+        for documento in json.load(file):
+            if documento["severidade"] == NivelSeveridade.CRITICO.value:
+                qtd_docs_criticos+= 1
+
+        return qtd_docs_criticos
