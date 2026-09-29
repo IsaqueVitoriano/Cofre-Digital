@@ -15,7 +15,7 @@ DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
 ATIVIDADE_LOG_FILE = BASE_DIR / "storage" / "logs" / "atividade.log"
 APP_LOG_FILE = BASE_DIR / "storage" / "logs" / "app.log"
 
-@router.get("/", response_model=Estatistica)
+@router.get("/estatisticas", response_model=Estatistica)
 def exibir_estatisticas():
     estatisticas = Estatistica(
         total_documentos=qtd_documentos_json(),
