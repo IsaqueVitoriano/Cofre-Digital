@@ -16,7 +16,7 @@ ATIVIDADE_LOG_FILE = BASE_DIR / "storage" / "logs" / "atividade.log"
 APP_LOG_FILE = BASE_DIR / "storage" / "logs" / "app.log"
 
 @router.get("/", response_model=Estatistica)
-def exibir_estatisticas_grafico():
+def exibir_estatisticas():
     estatisticas = Estatistica(
         total_documentos=qtd_documentos_json(),
         espaco_ocupado_bytes=qtd_espaco_ocupado_bytes(),
