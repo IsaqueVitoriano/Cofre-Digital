@@ -86,7 +86,7 @@ def maior_ocorrencia_download() -> str:
                 dias_ocorrencia[dia_semana] = dias_ocorrencia.get(dia_semana, 0) + 1
 
     if not dias_ocorrencia:
-        logger_api.warning("Nenhuma ocorrência foi encontrada no log.")
+        logger_api.warning("Nenhuma ocorrência de download foi encontrada no log.")
         return "Não houve ocorrências de Download recentemente"
 
     dia, quantidade = max(
