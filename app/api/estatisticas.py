@@ -4,9 +4,9 @@ from pathlib import Path
 
 from fastapi import APIRouter
 
-from core.logging_config import logger_api
-from models.documento import NivelSeveridade
-from models.estatistica import Estatistica
+from app.core.logging_config import logger_api
+from app.models.documento import NivelSeveridade
+from app.models.estatistica import Estatistica
 
 router = APIRouter(prefix="/documentos", tags=["estatisticas"])
 
