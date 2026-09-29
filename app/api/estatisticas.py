@@ -26,6 +26,10 @@ def exibir_estatisticas():
         quantidade_documentos_severidade_critica=qtd_documentos_severidade_critica()
     )
 
+    logger_api.info(
+        "Estatísticas de documentos consultadas"
+    )
+
     return estatisticas
 
 def qtd_documentos_json() -> int:
