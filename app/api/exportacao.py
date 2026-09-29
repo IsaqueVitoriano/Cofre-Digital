@@ -4,7 +4,7 @@ from pathlib import Path
 from fastapi import APIRouter
 from starlette.responses import FileResponse
 from app.core.logging_config import logger_api, logger_atividades
-from app.models.acoes_enum import AcaoAtividade, ResultadoAtividade
+from app.models.atividade_enum import AcaoAtividade, ResultadoAtividade
 
 router = APIRouter(
     prefix="/exportacao",
