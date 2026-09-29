@@ -15,8 +15,8 @@ app.include_router(consultas.router)
 app.include_router(monitoramento.router)
 
 # Rotas dinâmicas
+app.include_router(estatisticas.router)
 app.include_router(documentos.router)
 app.include_router(exportacao.router)
 app.include_router(download.router)
 app.include_router(integridade.router)
-app.include_router(estatisticas.router)
