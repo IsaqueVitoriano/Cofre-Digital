@@ -1,14 +1,17 @@
 import json
 from pathlib import Path
-
+from datetime import datetime
 from fastapi import APIRouter
 
+from core.logging_config import logger_api
 from models.estatistica import Estatistica
 
 router = APIRouter(prefix="/documentos", tags=["estatisticas"])
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
+ATIVIDADE_LOG_FILE = BASE_DIR / "storage" / "logs" / "atividade.log"
+APP_LOG_FILE = BASE_DIR / "storage" / "logs" / "app.log"
 
 @router.get("/")
 def exibir_estatisticas_grafico():
@@ -17,8 +20,7 @@ def exibir_estatisticas_grafico():
         espaco_ocupado_bytes=qtd_espaco_ocupado_bytes(),
         quantidade_documentos=documentos_por_extensao(),
         quantidade_documentos_categoria=documentos_por_categoria(),
-        dias_mais_upload=,
-        dias_mais_download=,
+        dias_mais_download=maior_ocorrencia_download(),
     )
 
 
@@ -56,3 +58,33 @@ def documentos_por_categoria() -> dict[str, int]:
             categoria_dict[categoria] = categoria_dict.get(categoria, 0) + 1
 
     return categoria_dict
+
+def maior_ocorrencia_download() -> str | None:
+    dias_ocorrencia: dict[str, int] = {}
+
+    with open(ATIVIDADE_LOG_FILE, 'r', encoding='utf-8')as file_log:
+
+        dias = [
+            "segunda-feira", "terça-feira", "quarta-feira",
+            "quinta-feira", "sexta-feira", "sábado", "domingo",
+        ]
+
+        for linha in file_log:
+            if "DOCUMENT_DOWNLOAD" in linha:
+
+                data = datetime.strptime(linha[:23], "%Y-%m-%d %H:%M:%S,%f")
+
+                dia_semana = dias[data.weekday()]
+
+                dias_ocorrencia[dia_semana] = dias_ocorrencia.get(dia_semana, 0) + 1
+
+    if not dias_ocorrencia:
+        logger_api.warning("Nenhuma ocorrência foi encontrada no log.")
+        return None
+
+    dia, quantidade = max(
+        dias_ocorrencia.items(),
+        key=lambda item: item[1]
+    )
+
+    return dia
