@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from api import estatisticas
+from app.api import estatisticas
 from app.api import consultas, monitoramento
 from app.api import documentos, exportacao, download, integridade
 
