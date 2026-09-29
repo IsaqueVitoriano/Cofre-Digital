@@ -62,7 +62,7 @@ def documentos_por_categoria() -> dict[str, int]:
 
     return categoria_dict
 
-def maior_ocorrencia_download() -> str | None:
+def maior_ocorrencia_download() -> str:
     dias_ocorrencia: dict[str, int] = {}
 
     with open(ATIVIDADE_LOG_FILE, 'r', encoding='utf-8')as file_log:
@@ -83,7 +83,7 @@ def maior_ocorrencia_download() -> str | None:
 
     if not dias_ocorrencia:
         logger_api.warning("Nenhuma ocorrência foi encontrada no log.")
-        return None
+        return "Não houve ocorrências de Download recentemente"
 
     dia, quantidade = max(
         dias_ocorrencia.items(),
