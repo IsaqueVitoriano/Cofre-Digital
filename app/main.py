@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+
+from app.api import estatisticas
 from app.api import consultas, monitoramento
 from app.api import documentos, exportacao, download, integridade
 
@@ -13,6 +15,7 @@ app.include_router(consultas.router)
 app.include_router(monitoramento.router)
 
 # Rotas dinâmicas
+app.include_router(estatisticas.router)
 app.include_router(documentos.router)
 app.include_router(exportacao.router)
 app.include_router(download.router)
