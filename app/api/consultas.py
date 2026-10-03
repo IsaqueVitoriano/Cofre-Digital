@@ -23,21 +23,24 @@ def filtra_documentos(
 
     if nome_original:
         resultados = [
-            doc for doc in resultados if doc.get("nome_original") == nome_original
+            doc for doc in resultados
+            if  nome_original.casefold() in doc.get("nome_original", "").casefold()
         ]
 
     if extensao:
-        resultados = [doc for doc in resultados if doc.get("extensao") == extensao]
+        resultados = [doc for doc in resultados
+                      if extensao in doc.get("extensao","")]
 
     if categoria:
-        resultados = [doc for doc in resultados if doc.get("categoria") == categoria]
+        resultados = [doc for doc in resultados
+                      if categoria in doc.get("categoria","")]
 
     if data_hora_evento:
         resultados = [
             doc
             for doc in resultados
             if doc.get("data_hora_evento")
-            and datetime.fromisoformat(str(doc.get("data_hora_evento"))) == data_hora_evento
+               and data_hora_evento in datetime.fromisoformat(doc["data_hora_evento"])
         ]
 
     logger_api.info(
