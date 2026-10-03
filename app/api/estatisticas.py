@@ -66,6 +66,8 @@ def documentos_por_categoria() -> dict[str, int]:
 
     return categoria_dict
 
+# nossas estatísticas extras
+
 def maior_ocorrencia_download() -> str:
     dias_ocorrencia: dict[str, int] = {}
 
