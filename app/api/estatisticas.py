@@ -89,7 +89,7 @@ def maior_ocorrencia_download() -> str:
         logger_api.warning("Nenhuma ocorrência de download foi encontrada no log.")
         return "Não houve ocorrências de Download recentemente"
 
-    dia, quantidade = max(
+    dia, _ = max(
         dias_ocorrencia.items(),
         key=lambda item: item[1]
     )
