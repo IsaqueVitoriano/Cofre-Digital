@@ -1,16 +1,10 @@
-import json
-import csv
 from pathlib import Path
 from datetime import datetime
 from uuid import uuid4
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
-from starlette.responses import FileResponse
-
 from app.core.logging_config import logger_api, logger_atividades
-
 from app.models.atividade_enum import ResultadoAtividade, AcaoAtividade
-
-from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao
+from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao,Categoria
 from app.repositories.json_repository import (
     adicionar,
     atualizar,
@@ -27,7 +21,6 @@ DIRETORIO_DOCUMENTOS = BASE_DIR / "storage" / "documentos"
 EXPORTACAO_CSV = BASE_DIR / "storage" / "exportacoes" / "exportacoes.csv"
 
 router = APIRouter(prefix="/documentos", tags=["documentos"])
-
 
 @router.get("/", response_model=list[Documento])
 def listar_documentos():
@@ -48,7 +41,7 @@ def listar_documento_por_id(documento_id: str):
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
 def criar_documento(
     arquivo: UploadFile = File(...),
-    categoria: str = Form(...),
+    categoria: Categoria = Form(...),
     descricao: str | None = Form(None),
     origem: str = Form(...),
     severidade: NivelSeveridade = Form(...),
@@ -120,8 +113,15 @@ def criar_documento(
     return documento
 
 @router.put("/{documento_id}", response_model=Documento, status_code=status.HTTP_200_OK)
-def atualizar_documento(documento_id: str, documento: DocumentoAtualizacao):
-    dados_atualizacao = documento.model_dump(mode="json")
+def atualizar_documento(
+        documento_id: str,
+        categoria: Categoria = Form(...),
+        descricao: str = Form(None),
+        origem: str = Form(...),
+        severidade: NivelSeveridade = Form(...),
+        tipo_de_evento: str = Form(...),
+        sistema_de_origem: str = Form(...)
+):
     documento_atual = buscar_por_id(DOCUMENTOS_FILE, documento_id)
     if not documento_atual:
         logger_api.warning(
@@ -132,17 +132,29 @@ def atualizar_documento(documento_id: str, documento: DocumentoAtualizacao):
         )
 
     try:
-        documento_atual.update(dados_atualizacao)
+        registro_atualizacao = DocumentoAtualizacao(
+            categoria=categoria,
+            descricao=descricao,
+            origem=origem,
+            severidade=severidade,
+            tipo_de_evento=tipo_de_evento,
+            sistema_de_origem=sistema_de_origem,
+        )
+        dados = registro_atualizacao.model_dump(mode="json")
+        documento_atual.update(dados)
         atualizar(
             DOCUMENTOS_FILE,
             documento_id,
-            documento_atual
+            dados
         )
     except OSError:
         logger_api.warning(
             "Erro ao atualizar documento: %s", documento_id
         )
-        raise
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Erro ao atualizar documento"
+        )
 
     logger_api.info(
         "Documento de id: %s foi atualizado",
@@ -167,7 +179,10 @@ def deletar_documento(documento_id: str):
         logger_api.warning(
             "Falha ao remover documento: %s, não foi encontrado", documento_id
         )
-        raise
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Falha ao remover documento"
+        )
 
     caminho = DIRETORIO_DOCUMENTOS / documento["nome_original"]
 
