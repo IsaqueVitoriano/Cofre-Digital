@@ -16,22 +16,19 @@ router = APIRouter(
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DIRETORIO_DOCUMENTOS = BASE_DIR / "storage" / "documentos"
-DOCUMENTOS_COMPACTADO = BASE_DIR / "storage" / "backups"
+DOCUMENTOS_COMPACTADOS = BASE_DIR / "storage" / "backups"
 DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "backups.json"
 
 @router.post("", status_code=status.HTTP_201_CREATED)
 def documento_compactado():
-    if DIRETORIO_DOCUMENTOS.exists():
-        arquivos = [
-            arquivo for arquivo in DIRETORIO_DOCUMENTOS.iterdir()
-            if arquivo.is_file() and arquivo.name != ".gitkeep"
-        ]
-    else :
-        arquivos = []
+    arquivos = [
+        arquivo for arquivo in DIRETORIO_DOCUMENTOS.iterdir()
+        if arquivo.is_file() and arquivo.name != ".gitkeep"
+    ]
 
     if not arquivos:
         logger_api.warning(
-            "Tentativa de realizar backup sem documentos no diretorio"
+            "Tentativa falha de realizar backup sem documentos no diretorio"
         )
 
         raise HTTPException(
@@ -40,10 +37,11 @@ def documento_compactado():
         )
 
     nome_original = "backup_" + datetime.now().strftime("%Y-%m-%d_%H%M%S_%f") + ".zip"
-    caminho = DOCUMENTOS_COMPACTADO / nome_original
-    DOCUMENTOS_COMPACTADO.mkdir(parents=True, exist_ok=True)
+
+    caminho = DOCUMENTOS_COMPACTADOS / nome_original
+    DOCUMENTOS_COMPACTADOS.mkdir(parents=True, exist_ok=True)
     DOCUMENTOS_FILE.parent.mkdir(parents=True, exist_ok=True)
-    
+
     with zipfile.ZipFile(caminho, "w") as file_zip:
         for arquivo in arquivos:
             if arquivo.is_file():
@@ -51,18 +49,22 @@ def documento_compactado():
                     arquivo,
                     arcname=arquivo.name,
                 )
+
         registro_json = BackupJson(
             arquivo=nome_original,
-            tamanho=arquivo.stat().st_size,
+            tamanho=caminho.stat().st_size,
         )
+
         dados = registro_json.model_dump(mode="json")
         adicionar(
             DOCUMENTOS_FILE,
             dados
         )
+
     logger_api.info(
         "backup realizado com sucesso"
     )
+
     return {"messagem" : "backup realizado com sucesso"}
 
 @router.get("/listagem_backup", response_model=list[BackupJson])
