@@ -14,11 +14,11 @@ def garantir_arquivo_json(caminho_arquivo: Path) -> None:
             with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
                 json.dump([], arquivo, ensure_ascii=False, indent=4)
 
+                logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
     except OSError:
         logger_api.warning("Falha ao criar ou escrever o arquivo: %s", caminho_arquivo.name)
         raise
 
-    logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
 
 
 def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
