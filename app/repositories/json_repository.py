@@ -6,13 +6,19 @@ from app.core.logging_config import logger_api
 
 
 def garantir_arquivo_json(caminho_arquivo: Path) -> None:
-    caminho_arquivo.parent.mkdir(parents=True, exist_ok=True)
 
-    if not caminho_arquivo.exists():
-        with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
-            json.dump([], arquivo, ensure_ascii=False, indent=4)
+    try:
+        caminho_arquivo.parent.mkdir(parents=True, exist_ok=True)
 
-        logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
+        if not caminho_arquivo.exists():
+            with open(caminho_arquivo, mode="w", encoding="utf-8") as arquivo:
+                json.dump([], arquivo, ensure_ascii=False, indent=4)
+
+    except OSError:
+        logger_api.warning("Falha ao criar ou escrever o arquivo: %s", caminho_arquivo.name)
+        raise
+
+    logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
 
 
 def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
@@ -25,6 +31,9 @@ def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
     except json.JSONDecodeError as erro:
         logger_api.error("O JSON é inválido em %s, o erro: %s", caminho_arquivo.name, erro)
         raise ValueError(f"{caminho_arquivo.name} contém JSON inválido.")
+    except FileNotFoundError as error:
+        logger_api.error("O Arquivo passado pelo diretório não foi encontrado: %s", error)
+        raise ValueError(f"Arquivo {caminho_arquivo.name} não foi encontrado.")
 
 
 def escrever_arquivo_json(caminho_arquivo: Path, dados: list[dict[str, Any]]) -> None:
