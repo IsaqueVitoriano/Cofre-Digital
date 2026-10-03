@@ -21,18 +21,24 @@ def consultas_logs(
 
     logs = [doc for doc in documentos if doc.get("extensao") == ".log"]
 
-    if origem:
-        logs = [log for log in logs if log.get("origem") == origem]
+    filtros_texto= {
+        "origem": origem,
+        "tipo_de_evento": tipo_de_evento,
+        "sistema_de_origem": sistema_de_origem,
+    }
+
+    for campo, termo in filtros_texto.items():
+        if termo:
+            termo_normalizado = termo.casefold()
+            logs = [
+                log for log in logs
+                if termo_normalizado in log.get(campo, "").casefold()
+            ]
 
     if severidade:
-        logs = [log for log in logs if log.get("severidade") == severidade.value]
-
-    if tipo_de_evento:
-        logs = [log for log in logs if log.get("tipo_de_evento") == tipo_de_evento]
-
-    if sistema_de_origem:
         logs = [
-            log for log in logs if log.get("sistema_de_origem") == sistema_de_origem
+            log for log in logs
+            if log.get("severidade") == severidade.value
         ]
 
     logger_api.info(
