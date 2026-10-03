@@ -10,6 +10,13 @@ class NivelSeveridade(str, Enum):
     ALTO = "alto"
     CRITICO = "critico"
 
+class Categoria(str, Enum):
+    PDF = "pdf"
+    DOCX = "docx"
+    JPEG = "jpeg"
+    PPTX = "pptx"
+
+
 
 class Documento(BaseModel):
     # Metadados gerais da aplicação
@@ -26,7 +33,7 @@ class Documento(BaseModel):
 
     tamanho: int = Field(..., description="Tamanho do arquivo em bytes")
 
-    categoria: str
+    categoria: Categoria
 
     descricao: str | None = None
 
@@ -49,7 +56,7 @@ class Documento(BaseModel):
 class DocumentoAtualizacao(BaseModel):
     # Metadados de Atualizacao
 
-    categoria: str
+    categoria: Categoria
 
     descricao: str | None = None
 
@@ -61,3 +68,6 @@ class DocumentoAtualizacao(BaseModel):
 
     sistema_de_origem: str
 
+class BackupJson(BaseModel):
+    nome_original: str
+    tamanho: int
