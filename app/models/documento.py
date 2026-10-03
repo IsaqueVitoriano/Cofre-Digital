@@ -69,5 +69,5 @@ class DocumentoAtualizacao(BaseModel):
     sistema_de_origem: str
 
 class BackupJson(BaseModel):
-    nome_original: str
+    arquivo: str
     tamanho: int

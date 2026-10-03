@@ -52,7 +52,7 @@ def documento_compactado():
                     arcname=arquivo.name,
                 )
         registro_json = BackupJson(
-            nome_original=nome_original,
+            arquivo=nome_original,
             tamanho=arquivo.stat().st_size,
         )
         dados = registro_json.model_dump(mode="json")
