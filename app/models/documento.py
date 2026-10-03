@@ -15,6 +15,7 @@ class Categoria(str, Enum):
     DOCX = "docx"
     JPEG = "jpeg"
     PPTX = "pptx"
+    PNG = "png"
 
 
 
