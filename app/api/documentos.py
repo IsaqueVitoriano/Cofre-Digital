@@ -36,6 +36,16 @@ def listar_documento_por_id(documento_id: str):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
+
+    logger_atividades.info(
+        "Um documento foi encontrado com id: %s", documento_id,
+        extra={
+            "acao": AcaoAtividade.DOCUMENT_UPLOAD.value,
+            "documento_id": documento["id"],
+            "documento": documento["nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
+    )
     return documento
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
