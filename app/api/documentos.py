@@ -144,6 +144,7 @@ def atualizar_documento(
 
     try:
         documento_atual.update({
+            "extensao":"."+categoria,
             "categoria": categoria,
             "descricao": descricao,
             "origem": origem,
