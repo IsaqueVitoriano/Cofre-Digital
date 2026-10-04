@@ -11,10 +11,15 @@ class NivelSeveridade(str, Enum):
     CRITICO = "critico"
 
 class Categoria(str, Enum):
-    PDF = "pdf"
-    DOCX = "docx"
-    JPEG = "jpeg"
-    PPTX = "pptx"
+    COMPROVANTES = "comprovante"
+    AUDITORIAS = "auditorias"
+    MANUAIS = "manuais"
+    FORMULARIOS = "formularios"
+    CONTRATOS = "contratos"
+    RELATORIOS = "relatorios"
+    CURRICULOS = "curriculos"
+    PRINTS = "prints"
+    SLIDES = "slides"
 
 
 

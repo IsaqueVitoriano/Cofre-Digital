@@ -36,6 +36,16 @@ def listar_documento_por_id(documento_id: str):
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="Documento nao encontrado"
         )
+
+    logger_atividades.info(
+        "Um documento foi encontrado com id: %s", documento_id,
+        extra={
+            "acao": AcaoAtividade.DOCUMENT_UPLOAD.value,
+            "documento_id": documento["id"],
+            "documento": documento["nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
+    )
     return documento
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
@@ -123,6 +133,7 @@ def atualizar_documento(
         sistema_de_origem: str = Form(...)
 ):
     documento_atual = buscar_por_id(DOCUMENTOS_FILE, documento_id)
+
     if not documento_atual:
         logger_api.warning(
             "Tentativa de atualizar um documento inexistente com id: %s", documento_id
@@ -132,21 +143,21 @@ def atualizar_documento(
         )
 
     try:
-        registro_atualizacao = DocumentoAtualizacao(
-            categoria=categoria,
-            descricao=descricao,
-            origem=origem,
-            severidade=severidade,
-            tipo_de_evento=tipo_de_evento,
-            sistema_de_origem=sistema_de_origem,
-        )
-        dados = registro_atualizacao.model_dump(mode="json")
-        documento_atual.update(dados)
+        documento_atual.update({
+            "categoria": categoria,
+            "descricao": descricao,
+            "origem": origem,
+            "severidade": severidade,
+            "tipo_de_evento": tipo_de_evento,
+            "sistema_de_origem": sistema_de_origem,
+        })
+
         atualizar(
             DOCUMENTOS_FILE,
             documento_id,
-            dados
+            documento_atual
         )
+
     except OSError:
         logger_api.warning(
             "Erro ao atualizar documento: %s", documento_id
@@ -156,9 +167,14 @@ def atualizar_documento(
             detail="Erro ao atualizar documento"
         )
 
-    logger_api.info(
+    logger_atividades.info(
         "Documento de id: %s foi atualizado",
-        documento_id
+        extra={
+            "acao": AcaoAtividade.DOCUMENT_UPDATE.value,
+            "documento_id": documento_atual["id"],
+            "documento": documento_atual["nome_original"],
+            "resultado": ResultadoAtividade.SUCCESS.value
+        }
     )
     return documento_atual
 
