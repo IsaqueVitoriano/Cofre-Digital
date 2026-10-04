@@ -8,7 +8,7 @@ from app.services.integridade_service import calcula_hash
 from app.models.atividade_enum import AcaoAtividade, ResultadoAtividade
 
 router = APIRouter(
-    prefix="/integridade",
+    prefix="/documentos",
     tags=["integridade"],
 )
 
