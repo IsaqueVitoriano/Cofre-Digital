@@ -7,6 +7,7 @@ from fastapi import APIRouter
 from app.core.logging_config import logger_api
 from app.models.documento import NivelSeveridade
 from app.models.estatistica import Estatistica
+from app.repositories.json_repository import ler_arquivo_json
 
 router = APIRouter(prefix="/documentos", tags=["estatisticas"])
 
@@ -33,36 +34,28 @@ def exibir_estatisticas():
     return estatisticas
 
 def qtd_documentos_json() -> int:
-    with open(DOCUMENTOS_FILE, 'r', encoding="utf-8") as file:
-        documentos_json = json.load(file)
-        return len(documentos_json)
+    return len(ler_arquivo_json(DOCUMENTOS_FILE))
 
 
 def qtd_espaco_ocupado_bytes() -> int:
-    tot_tamanho_bytes = 0
-    with open(DOCUMENTOS_FILE, 'r', encoding="utf-8") as file:
-        for documento in json.load(file):
-            tot_tamanho_bytes+= documento["tamanho"]
-
-    return tot_tamanho_bytes
+    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
+    return sum(documento["tamanho"] for documento in documentos)
 
 def documentos_por_extensao() -> dict[str, int]:
     extensao_dict: dict[str,int] = {}
-
-    with open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file:
-        for documento in json.load(file):
-            extensao = documento["extensao"]
-            extensao_dict[extensao] = extensao_dict.get(extensao, 0)+1
+    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
+    for documento in documentos:
+        extensao = documento["extensao"]
+        extensao_dict[extensao] = extensao_dict.get(extensao, 0)+1
 
     return extensao_dict
 
 def documentos_por_categoria() -> dict[str, int]:
     categoria_dict: dict[str, int] = {}
-
-    with open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file:
-        for documento in json.load(file):
-            categoria = documento["categoria"]
-            categoria_dict[categoria] = categoria_dict.get(categoria, 0) + 1
+    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
+    for documento in documentos:
+        categoria = documento["categoria"]
+        categoria_dict[categoria] = categoria_dict.get(categoria, 0) + 1
 
     return categoria_dict
 
@@ -100,11 +93,10 @@ def maior_ocorrencia_download() -> str:
 
 def qtd_documentos_severidade_critica():
     qtd_docs_criticos = 0
+    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
 
-    with open(DOCUMENTOS_FILE, 'r', encoding='utf-8') as file:
+    for documento in documentos:
+        if documento["severidade"] == NivelSeveridade.CRITICO.value:
+            qtd_docs_criticos+= 1
 
-        for documento in json.load(file):
-            if documento["severidade"] == NivelSeveridade.CRITICO.value:
-                qtd_docs_criticos+= 1
-
-        return qtd_docs_criticos
+    return qtd_docs_criticos
