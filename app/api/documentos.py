@@ -168,7 +168,7 @@ def atualizar_documento(
         )
 
     logger_atividades.info(
-        "Documento de id: %s foi atualizado",
+        "Documento de id: %s foi atualizado", documento_id,
         extra={
             "acao": AcaoAtividade.DOCUMENT_UPDATE.value,
             "documento_id": documento_atual["id"],
