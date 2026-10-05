@@ -46,7 +46,14 @@ def auditoria_global():
     )
 
     for doc in documentos:
-        caminho_arquivo = DIRETORIO_DOCUMENTOS / doc.get("nome_armazenado")
+
+        nome_armazenado = doc.get("nome_armazenado")
+        if not nome_armazenado:
+            logger_api.warning("Registro sem nome_armazenado: %s", doc.get("id"))
+            relatorio["arquivos_nao_encontrados"] += 1
+            continue
+
+        caminho_arquivo = DIRETORIO_DOCUMENTOS / nome_armazenado
         if not caminho_arquivo.exists():
             relatorio["arquivos_nao_encontrados"] += 1
             logger_api.warning(
