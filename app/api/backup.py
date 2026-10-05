@@ -50,16 +50,16 @@ def documento_compactado():
                     arcname=arquivo.name,
                 )
 
-        registro_json = BackupJson(
-            arquivo=nome_original,
-            tamanho=caminho.stat().st_size,
-        )
+    registro_json = BackupJson(
+        arquivo=nome_original,
+        tamanho=caminho.stat().st_size,
+    )
 
-        dados = registro_json.model_dump(mode="json")
-        adicionar(
-            DOCUMENTOS_FILE,
-            dados
-        )
+    dados = registro_json.model_dump(mode="json")
+    adicionar(
+        DOCUMENTOS_FILE,
+        dados
+    )
 
     logger_api.info(
         "backup realizado com sucesso"
