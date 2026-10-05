@@ -1,8 +1,6 @@
 # Cofre Digital
 
-API para gerenciamento, proteção e auditoria de arquivos, logs e evidências de segurança da informação.
-
-O projeto utiliza **FastAPI** e está organizado para armazenar documentos, metadados, backups, exportações e logs em diretórios separados.
+API para cadastro, armazenamento e auditoria de documentos e evidências de segurança da informação. Desenvolvida com FastAPI, mantém arquivos e metadados em diretórios separados.
 
 ## Tecnologias
 
@@ -15,28 +13,30 @@ O projeto utiliza **FastAPI** e está organizado para armazenar documentos, meta
 ## Estrutura do projeto
 
 ```text
-Cofre-Digital/
-├── app/
-│   ├── api/              # Rotas da API
-│   ├── core/             # Configurações compartilhadas
-│   ├── models/           # Modelos e schemas
-│   ├── repositories/     # Persistência de dados
-│   ├── services/         # Regras de negócio
-│   └── main.py           # Ponto de entrada da aplicação
-├── config/
-│   └── logging.yaml      # Configuração de armazenamento e logs
-├── storage/
-│   ├── backups/
-│   ├── documentos/
-│   ├── exportacoes/
-│   ├── logs/
-│   └── metadata/
-└── README.md
+app/
+├── api/              # Endpoints da API
+├── core/             # Configuração compartilhada, como logging
+├── models/           # Modelos Pydantic e enums
+├── repositories/     # Persistência dos metadados JSON
+├── services/         # Serviços, como cálculo de hash
+└── main.py           # Criação da aplicação FastAPI
+
+config/
+└── logging.yaml      # Formatters, handlers e níveis de log
+
+storage/
+├── backups/          # Backups ZIP
+├── documentos/       # Arquivos enviados
+├── exportacoes/      # Arquivos CSV gerados
+├── logs/             # Logs da aplicação e de atividades
+└── metadata/         # documentos.json e backups.json
 ```
+
+Os diretórios em `storage/` recebem arquivos gerados durante a execução. Não versione dados locais nem logs gerados; os arquivos `.gitkeep` preservam os diretórios vazios no Git.
 
 ## Configuração do ambiente
 
-Crie e ative um ambiente virtual:
+Na raiz do projeto, crie e ative um ambiente virtual:
 
 ```powershell
 python -m venv .venv
@@ -46,50 +46,78 @@ python -m venv .venv
 Instale as dependências:
 
 ```powershell
-python -m pip install fastapi uvicorn pyyaml
+python -m pip install -r requirements.txt
+python -m pip install python-multipart
 ```
 
-## Executando a aplicação
+`python-multipart` é necessário para os endpoints que recebem arquivos e campos de formulário.
 
-Na raiz do projeto, execute:
+## Executar a aplicação
+
+Inicie o servidor a partir da raiz do repositório:
 
 ```powershell
 python -m uvicorn app.main:app --reload
 ```
 
-O ponto de entrada da aplicação é `app/main.py`, que expõe a instância FastAPI `app`.
+Com o servidor em execução, acesse:
 
+- Swagger UI: <http://127.0.0.1:8000/docs>
+- ReDoc: <http://127.0.0.1:8000/redoc>
 
-## Documentação da API
+## Endpoints
 
-Com a aplicação em execução, acesse:
+| Método | Caminho | Descrição |
+| --- | --- | --- |
+| `GET` | `/documentos/` | Lista documentos cadastrados |
+| `GET` | `/documentos/{documento_id}` | Consulta um documento pelo ID |
+| `POST` | `/documentos/` | Envia um arquivo e cadastra seus metadados |
+| `PUT` | `/documentos/{documento_id}` | Atualiza os metadados de um documento |
+| `DELETE` | `/documentos/{documento_id}` | Remove um documento |
+| `GET` | `/documentos/filtragem` | Filtra documentos por nome, extensão, categoria e data/hora do evento |
+| `GET` | `/documentos/filtragem/monitoramento` | Filtra documentos cadastrados com extensão `.log` |
+| `GET` | `/documentos/estatisticas` | Retorna estatísticas dos documentos e downloads |
+| `GET` | `/documentos/integridade/global` | Verifica a integridade dos documentos cadastrados |
+| `GET` | `/documentos/{documento_id}/integridade` | Verifica a integridade de um documento |
+| `GET` | `/download/{documento_id}/download` | Baixa o arquivo associado ao documento |
+| `POST` | `/backup` | Cria um backup ZIP dos arquivos armazenados |
+| `GET` | `/backup/listagem_backup` | Lista os backups cadastrados |
+| `GET` | `/exportacao/exportar/CSV` | Gera e retorna um CSV dos metadados |
 
-- Swagger UI: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
-- ReDoc: [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
+### Upload
 
-## Configuração de logs
+O endpoint `POST /documentos/` recebe `multipart/form-data` com:
 
-A configuração está em `config/logging.yaml`. Os logs são enviados para o console e para:
+- `arquivo` — arquivo a ser enviado;
+- `categoria` — categoria do documento;
+- `origem`;
+- `severidade` — `baixo`, `medio`, `alto` ou `critico`;
+- `tipo_de_evento`;
+- `sistema_de_origem`;
+- `descricao` — opcional.
 
-```text
-storage/logs/app.log
-```
+As categorias aceitas atualmente são `comprovante`, `auditorias`, `manuais`, `formularios`, `contratos`, `relatorios`, `curriculos`, `prints` e `slides`.
 
-Os diretórios de armazenamento são definidos na seção `storage` do arquivo de configuração. Arquivos gerados nesses diretórios não devem ser versionados.
+Os metadados incluem nome original e armazenado, extensão, tipo MIME, tamanho, datas e hash SHA-256.
 
-## Modelo de documento
+### Monitoramento
 
-O modelo `Documento`, em `app/models/documento.py`, representa os metadados de uma evidência, incluindo:
+O endpoint `/documentos/filtragem/monitoramento` consulta os registros em `storage/metadata/documentos.json` e filtra documentos cuja extensão registrada seja `.log`. Ele não pesquisa diretamente o conteúdo de `storage/logs/app.log` ou `storage/logs/atividade.log`.
 
-- identificação e nomes do arquivo;
-- extensão, tipo MIME e tamanho;
-- hash SHA-256 para integridade;
-- origem e sistema de origem;
-- severidade do evento;
-- datas de upload e do evento.
+## Persistência e integridade
 
-Os níveis de severidade disponíveis são: `baixo`, `medio`, `alto` e `critico`.
+Os metadados dos documentos são armazenados em `storage/metadata/documentos.json`; os metadados dos backups, em `storage/metadata/backups.json`. As operações de persistência JSON são centralizadas em `app/repositories/json_repository.py`.
+
+A verificação de integridade calcula o hash SHA-256 do arquivo armazenado e compara o resultado com o hash registrado nos metadados.
+
+## Logs
+
+A configuração está em `config/logging.yaml`:
+
+- `storage/logs/app.log` registra eventos gerais da aplicação;
+- `storage/logs/atividade.log` registra atividades com ação, ID do documento, nome e resultado;
+- os logs da aplicação e as atividades também são enviados ao console, com formatters próprios.
 
 ## Desenvolvimento
 
-Execute os comandos sempre a partir da raiz do repositório. Não versione arquivos específicos da máquina, como `.venv/`, `.idea/`, `__pycache__/` e logs gerados.
+Execute os comandos a partir da raiz do repositório. Não versione ambientes virtuais, caches, logs gerados nem dados locais de `storage/`.
