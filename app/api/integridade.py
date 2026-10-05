@@ -1,14 +1,13 @@
 from fastapi import APIRouter, HTTPException, status
 from pathlib import Path
 from app.core.logging_config import logger_api, logger_atividades
-from app.repositories.json_repository import (
-    buscar_por_id
-)
+from app.repositories.json_repository import buscar_por_id, ler_arquivo_json
 from app.services.integridade_service import calcula_hash
 from app.models.atividade_enum import AcaoAtividade, ResultadoAtividade
+from app.models.integridade_relatorio import RelatoriosIntegridade
 
 router = APIRouter(
-    prefix="/integridade",
+    prefix="/documentos",
     tags=["integridade"],
 )
 
@@ -18,8 +17,60 @@ DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
 DIRETORIO_DOCUMENTOS = BASE_DIR / "storage" / "documentos"
 
 
+@router.get(
+    "/integridade/global",
+    status_code=status.HTTP_200_OK,
+    response_model=RelatoriosIntegridade,
+)
+def auditoria_global():
+    documentos = ler_arquivo_json(DOCUMENTOS_FILE)
+
+    if not documentos:
+        logger_api.warning("Tentativa de auditar com %s documentos.", len(documentos))
+        return {
+            "documentos_verificados": 0,
+            "documentos_integros": 0,
+            "documentos_alterados": 0,
+            "arquivos_nao_encontrados": 0,
+        }
+
+    relatorio = {
+        "documentos_verificados": len(documentos),
+        "documentos_integros": 0,
+        "documentos_alterados": 0,
+        "arquivos_nao_encontrados": 0,
+    }
+
+    logger_api.info(
+        "Iniciando verificacao de integridade global com %s documentos", len(documentos)
+    )
+
+    for doc in documentos:
+        caminho_arquivo = DIRETORIO_DOCUMENTOS / doc.get("nome_armazenado")
+        if not caminho_arquivo.exists():
+            relatorio["arquivos_nao_encontrados"] += 1
+            logger_api.warning(
+                "Arquivo fisico nao encontrado para o documento: %s",
+                doc.get("nome_armazenado"),
+            )
+            continue
+
+        hash_atual = calcula_hash(caminho_arquivo)
+
+        if hash_atual == doc.get("sha256"):
+            relatorio["documentos_integros"] += 1
+        else:
+            relatorio["documentos_alterados"] += 1
+            logger_api.error(
+                "Quebra de integridade no documento: %s", doc.get("nome_armazenado")
+            )
+
+    logger_api.info("Verificacao de integridade global concluida.")
+    return relatorio
+
+
 @router.get("/{documento_id}/integridade", status_code=status.HTTP_200_OK)
-def obter_hash_documento(documento_id: str):
+def auditoria_por_id(documento_id: str):
     documento = buscar_por_id(DOCUMENTOS_FILE, documento_id)
 
     if not documento:
@@ -56,8 +107,8 @@ def obter_hash_documento(documento_id: str):
             "acao": AcaoAtividade.INTEGRITY_CHECK.value,
             "documento_id": documento["id"],
             "documento": documento["nome_original"],
-            "resultado": ResultadoAtividade.SUCCESS.value
-        }
+            "resultado": ResultadoAtividade.SUCCESS.value,
+        },
     )
 
     return {

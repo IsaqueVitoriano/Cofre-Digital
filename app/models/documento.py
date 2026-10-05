@@ -10,6 +10,7 @@ class NivelSeveridade(str, Enum):
     ALTO = "alto"
     CRITICO = "critico"
 
+
 class Categoria(str, Enum):
     COMPROVANTES = "comprovante"
     AUDITORIAS = "auditorias"
@@ -20,7 +21,6 @@ class Categoria(str, Enum):
     CURRICULOS = "curriculos"
     PRINTS = "prints"
     SLIDES = "slides"
-
 
 
 class Documento(BaseModel):
@@ -58,6 +58,7 @@ class Documento(BaseModel):
 
     sistema_de_origem: str
 
+
 class DocumentoAtualizacao(BaseModel):
     # Metadados de Atualizacao
 
@@ -72,6 +73,7 @@ class DocumentoAtualizacao(BaseModel):
     tipo_de_evento: str
 
     sistema_de_origem: str
+
 
 class BackupJson(BaseModel):
     arquivo: str
