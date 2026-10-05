@@ -46,7 +46,7 @@ def baixar_documento(documento_id: str):
         extra={
             "acao": AcaoAtividade.DOCUMENT_DOWNLOAD.value,
             "documento_id": documento["id"],
-            "documento": ["documento.nome_original"],
+            "documento": documento["nome_original"],
             "resultado": ResultadoAtividade.SUCCESS.value
         }
     )
