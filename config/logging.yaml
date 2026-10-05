@@ -31,6 +31,12 @@ logging:
       formatter: app
       stream: ext://sys.stdout
 
+    console_atividades:
+      class: logging.StreamHandler
+      level: INFO
+      formatter: atividade
+      stream: ext://sys.stdout
+
     app_file:
       class: logging.FileHandler
       level: DEBUG
@@ -57,7 +63,7 @@ logging:
     logger_atividades:
       level: INFO
       handlers:
-        - console
+        - console_atividades
         - atividades_file
       propagate: false
 
