@@ -1,10 +1,10 @@
 import csv
-import json
 from pathlib import Path
 from fastapi import APIRouter
 from starlette.responses import FileResponse
 from app.core.logging_config import logger_api, logger_atividades
 from app.models.atividade_enum import AcaoAtividade, ResultadoAtividade
+from app.repositories.json_repository import ler_arquivo_json
 
 router = APIRouter(
     prefix="/exportacao",
@@ -17,8 +17,7 @@ EXPORTACAO_CSV = BASE_DIR / "storage" / "exportacoes" / "exportacoes.csv"
 
 @router.get("/exportar/CSV")
 def exportacao_csv():
-    with open(DOCUMENTOS_FILE, mode="r", encoding="utf-8") as file:
-        dados = json.load(file)
+    dados= ler_arquivo_json(DOCUMENTOS_FILE)
     with open(EXPORTACAO_CSV, mode="w", newline="", encoding="utf-8") as file:
         fieldnames = [
             "id",
