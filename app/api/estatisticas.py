@@ -15,6 +15,7 @@ DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
 ATIVIDADE_LOG_FILE = BASE_DIR / "storage" / "logs" / "atividade.log"
 APP_LOG_FILE = BASE_DIR / "storage" / "logs" / "app.log"
 
+
 @router.get("/estatisticas", response_model=Estatistica)
 def exibir_estatisticas():
     estatisticas = Estatistica(
@@ -23,51 +24,58 @@ def exibir_estatisticas():
         quantidade_documentos=documentos_por_extensao(),
         quantidade_documentos_categoria=documentos_por_categoria(),
         dias_de_mais_download=maior_ocorrencia_download(),
-        quantidade_documentos_severidade_critica=qtd_documentos_severidade_critica()
+        quantidade_documentos_severidade_critica=qtd_documentos_severidade_critica(),
     )
 
-    logger_api.info(
-        "Estatísticas de documentos consultadas"
-    )
+    logger_api.info("Estatísticas de documentos consultadas")
 
     return estatisticas
+
 
 def qtd_documentos_json() -> int:
     return len(ler_arquivo_json(DOCUMENTOS_FILE))
 
 
 def qtd_espaco_ocupado_bytes() -> int:
-    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
+    documentos = ler_arquivo_json(DOCUMENTOS_FILE)
     return sum(documento["tamanho"] for documento in documentos)
 
+
 def documentos_por_extensao() -> dict[str, int]:
-    extensao_dict: dict[str,int] = {}
-    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
+    extensao_dict: dict[str, int] = {}
+    documentos = ler_arquivo_json(DOCUMENTOS_FILE)
     for documento in documentos:
         extensao = documento["extensao"]
-        extensao_dict[extensao] = extensao_dict.get(extensao, 0)+1
+        extensao_dict[extensao] = extensao_dict.get(extensao, 0) + 1
 
     return extensao_dict
 
+
 def documentos_por_categoria() -> dict[str, int]:
     categoria_dict: dict[str, int] = {}
-    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
+    documentos = ler_arquivo_json(DOCUMENTOS_FILE)
     for documento in documentos:
         categoria = documento["categoria"]
         categoria_dict[categoria] = categoria_dict.get(categoria, 0) + 1
 
     return categoria_dict
 
+
 # nossas estatísticas extras
 
 def maior_ocorrencia_download() -> str:
     dias_ocorrencia: dict[str, int] = {}
 
-    with open(ATIVIDADE_LOG_FILE, 'r', encoding='utf-8')as file_log:
+    with open(ATIVIDADE_LOG_FILE, "r", encoding="utf-8") as file_log:
 
         dias = [
-            "segunda-feira", "terça-feira", "quarta-feira",
-            "quinta-feira", "sexta-feira", "sábado", "domingo",
+            "segunda-feira",
+            "terça-feira",
+            "quarta-feira",
+            "quinta-feira",
+            "sexta-feira",
+            "sábado",
+            "domingo",
         ]
 
         for linha in file_log:
@@ -83,19 +91,17 @@ def maior_ocorrencia_download() -> str:
         logger_api.warning("Nenhuma ocorrência de download foi encontrada no log.")
         return "Não houve ocorrências de Download recentemente"
 
-    dia, _ = max(
-        dias_ocorrencia.items(),
-        key=lambda item: item[1]
-    )
+    dia, _ = max(dias_ocorrencia.items(), key=lambda item: item[1])
 
     return dia
 
+
 def qtd_documentos_severidade_critica():
     qtd_docs_criticos = 0
-    documentos= ler_arquivo_json(DOCUMENTOS_FILE)
+    documentos = ler_arquivo_json(DOCUMENTOS_FILE)
 
     for documento in documentos:
         if documento["severidade"] == NivelSeveridade.CRITICO.value:
-            qtd_docs_criticos+= 1
+            qtd_docs_criticos += 1
 
     return qtd_docs_criticos

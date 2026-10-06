@@ -4,7 +4,12 @@ from uuid import uuid4
 from fastapi import APIRouter, HTTPException, status, UploadFile, File, Form
 from app.core.logging_config import logger_api, logger_atividades
 from app.models.atividade_enum import ResultadoAtividade, AcaoAtividade
-from app.models.documento import Documento, NivelSeveridade, DocumentoAtualizacao,Categoria
+from app.models.documento import (
+    Documento,
+    NivelSeveridade,
+    DocumentoAtualizacao,
+    Categoria,
+)
 from app.repositories.json_repository import (
     adicionar,
     atualizar,
@@ -22,11 +27,13 @@ EXPORTACAO_CSV = BASE_DIR / "storage" / "exportacoes" / "exportacoes.csv"
 
 router = APIRouter(prefix="/documentos", tags=["documentos"])
 
+
 @router.get("/", response_model=list[Documento])
 def listar_documentos():
     documentos = ler_arquivo_json(DOCUMENTOS_FILE)
     logger_api.info("%s documentos foram listados", len(documentos))
     return documentos
+
 
 @router.get("/{documento_id}", response_model=Documento)
 def listar_documento_por_id(documento_id: str):
@@ -38,15 +45,17 @@ def listar_documento_por_id(documento_id: str):
         )
 
     logger_atividades.info(
-        "Um documento foi encontrado com id: %s", documento_id,
+        "Um documento foi encontrado com id: %s",
+        documento_id,
         extra={
             "acao": AcaoAtividade.DOCUMENT_UPLOAD.value,
             "documento_id": documento["id"],
             "documento": documento["nome_original"],
-            "resultado": ResultadoAtividade.SUCCESS.value
-        }
+            "resultado": ResultadoAtividade.SUCCESS.value,
+        },
     )
     return documento
+
 
 @router.post("/", response_model=Documento, status_code=status.HTTP_201_CREATED)
 def criar_documento(
@@ -104,11 +113,8 @@ def criar_documento(
     try:
         adicionar(DOCUMENTOS_FILE, dados)
     except OSError:
-        logger_api.warning(
-            "Falha ao adicionar documento: %s", documento_id
-        )
+        logger_api.warning("Falha ao adicionar documento: %s", documento_id)
         raise
-
 
     logger_atividades.info(
         "Documento criado",
@@ -116,21 +122,22 @@ def criar_documento(
             "acao": AcaoAtividade.DOCUMENT_CREATE.value,
             "documento_id": documento.id,
             "documento": documento.nome_original,
-            "resultado": ResultadoAtividade.SUCCESS.value
-        }
+            "resultado": ResultadoAtividade.SUCCESS.value,
+        },
     )
 
     return documento
 
+
 @router.put("/{documento_id}", response_model=Documento, status_code=status.HTTP_200_OK)
 def atualizar_documento(
-        documento_id: str,
-        categoria: Categoria = Form(...),
-        descricao: str = Form(None),
-        origem: str = Form(...),
-        severidade: NivelSeveridade = Form(...),
-        tipo_de_evento: str = Form(...),
-        sistema_de_origem: str = Form(...)
+    documento_id: str,
+    categoria: Categoria = Form(...),
+    descricao: str = Form(None),
+    origem: str = Form(...),
+    severidade: NivelSeveridade = Form(...),
+    tipo_de_evento: str = Form(...),
+    sistema_de_origem: str = Form(...),
 ):
     documento_atual = buscar_por_id(DOCUMENTOS_FILE, documento_id)
 
@@ -143,40 +150,38 @@ def atualizar_documento(
         )
 
     try:
-        documento_atual.update({
-            "categoria": categoria,
-            "descricao": descricao,
-            "origem": origem,
-            "severidade": severidade,
-            "tipo_de_evento": tipo_de_evento,
-            "sistema_de_origem": sistema_de_origem,
-        })
-
-        atualizar(
-            DOCUMENTOS_FILE,
-            documento_id,
-            documento_atual
+        documento_atual.update(
+            {
+                "categoria": categoria,
+                "descricao": descricao,
+                "origem": origem,
+                "severidade": severidade,
+                "tipo_de_evento": tipo_de_evento,
+                "sistema_de_origem": sistema_de_origem,
+            }
         )
+
+        atualizar(DOCUMENTOS_FILE, documento_id, documento_atual)
 
     except OSError:
-        logger_api.warning(
-            "Erro ao atualizar documento: %s", documento_id
-        )
+        logger_api.warning("Erro ao atualizar documento: %s", documento_id)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Erro ao atualizar documento"
+            detail="Erro ao atualizar documento",
         )
 
     logger_atividades.info(
-        "Documento de id: %s foi atualizado", documento_id,
+        "Documento de id: %s foi atualizado",
+        documento_id,
         extra={
             "acao": AcaoAtividade.DOCUMENT_UPDATE.value,
             "documento_id": documento_atual["id"],
             "documento": documento_atual["nome_original"],
-            "resultado": ResultadoAtividade.SUCCESS.value
-        }
+            "resultado": ResultadoAtividade.SUCCESS.value,
+        },
     )
     return documento_atual
+
 
 @router.delete("/{documento_id}", status_code=status.HTTP_200_OK)
 def deletar_documento(documento_id: str):
@@ -197,7 +202,7 @@ def deletar_documento(documento_id: str):
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Falha ao remover documento"
+            detail="Falha ao remover documento",
         )
 
     caminho = DIRETORIO_DOCUMENTOS / documento["nome_original"]
@@ -211,8 +216,8 @@ def deletar_documento(documento_id: str):
             "acao": AcaoAtividade.DOCUMENT_DELETE.value,
             "documento_id": documento["id"],
             "documento": documento["nome_original"],
-            "resultado": ResultadoAtividade.SUCCESS.value
-        }
+            "resultado": ResultadoAtividade.SUCCESS.value,
+        },
     )
 
     return {"mensagem": "Documento deletado com sucesso."}

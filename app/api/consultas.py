@@ -16,6 +16,7 @@ def filtra_documentos(
     nome_original: str | None = None,
     extensao: str | None = None,
     categoria: str | None = None,
+    origem: str | None = None,
     data_hora_evento: datetime | None = None,
 ):
     documentos = ler_arquivo_json(DOCUMENTOS_FILE)
@@ -36,6 +37,9 @@ def filtra_documentos(
             doc for doc in resultados if categoria in doc.get("categoria", "")
         ]
 
+    if origem:
+        resultados = [doc for doc in resultados if origem in doc.get("origem", "")]
+
     if data_hora_evento:
         resultados = [
             doc
@@ -45,10 +49,11 @@ def filtra_documentos(
         ]
 
     logger_api.info(
-        "Filtragem realizada. Filtros - nome original: %s,  extensao: %s, categoria: %s, data e hora: %s",
+        "Filtragem realizada. Filtros - nome original: %s,  extensao: %s, categoria: %s, origem: %s, data e hora: %s",
         nome_original,
         extensao,
         categoria,
+        origem,
         data_hora_evento,
     )
 

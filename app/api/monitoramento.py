@@ -19,31 +19,29 @@ def consultas_logs(
 ):
     documentos = ler_arquivo_json(DOCUMENTOS_FILE)
 
-    logs = [doc for doc in documentos
-            if doc.get("extensao") == ".log"]
+    logs = [doc for doc in documentos if doc.get("extensao") == ".log"]
 
     if origem:
         logs = [
-            log for log in logs
-            if origem.casefold() in log.get("origem", "").casefold()
+            log for log in logs if origem.casefold() in log.get("origem", "").casefold()
         ]
 
     if severidade:
-        logs = [
-            log for log in logs
-            if log.get("severidade") == severidade.value
-        ]
+        logs = [log for log in logs if log.get("severidade") == severidade.value]
 
     if tipo_de_evento:
         logs = [
-            log for log in logs
+            log
+            for log in logs
             if tipo_de_evento.casefold() in log.get("tipo_de_evento", "").casefold()
         ]
 
     if sistema_de_origem:
         logs = [
-            log for log in logs
-            if sistema_de_origem.casefold() in log.get("sistema_de_origem", "").casefold()
+            log
+            for log in logs
+            if sistema_de_origem.casefold()
+            in log.get("sistema_de_origem", "").casefold()
         ]
 
     logger_api.info(

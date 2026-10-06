@@ -16,9 +16,10 @@ def garantir_arquivo_json(caminho_arquivo: Path) -> None:
 
                 logger_api.info("O arquivo JSON %s foi criado.", caminho_arquivo.name)
     except OSError:
-        logger_api.warning("Falha ao criar ou escrever o arquivo: %s", caminho_arquivo.name)
+        logger_api.warning(
+            "Falha ao criar ou escrever o arquivo: %s", caminho_arquivo.name
+        )
         raise
-
 
 
 def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
@@ -29,10 +30,14 @@ def ler_arquivo_json(caminho_arquivo: Path) -> list[dict[str, Any]]:
             return json.load(arquivo)
 
     except json.JSONDecodeError as erro:
-        logger_api.error("O JSON é inválido em %s, o erro: %s", caminho_arquivo.name, erro)
+        logger_api.error(
+            "O JSON é inválido em %s, o erro: %s", caminho_arquivo.name, erro
+        )
         raise ValueError(f"{caminho_arquivo.name} contém JSON inválido.")
     except FileNotFoundError as error:
-        logger_api.error("O Arquivo passado pelo diretório não foi encontrado: %s", error)
+        logger_api.error(
+            "O Arquivo passado pelo diretório não foi encontrado: %s", error
+        )
         raise ValueError(f"Arquivo {caminho_arquivo.name} não foi encontrado.")
 
 
