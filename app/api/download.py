@@ -1,17 +1,12 @@
 from fastapi import APIRouter, HTTPException, status
-from app.repositories.json_repository import (
-    buscar_por_id
-)
+from app.repositories.json_repository import buscar_por_id
 from app.core.logging_config import logger_api, logger_atividades
 from pathlib import Path
 from starlette.responses import FileResponse
 
 from app.models.atividade_enum import AcaoAtividade, ResultadoAtividade
 
-router = APIRouter(
-    prefix="/download",
-    tags=["download"]
-)
+router = APIRouter(prefix="/download", tags=["download"])
 
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 DOCUMENTOS_FILE = BASE_DIR / "storage" / "metadata" / "documentos.json"
@@ -47,8 +42,8 @@ def baixar_documento(documento_id: str):
             "acao": AcaoAtividade.DOCUMENT_DOWNLOAD.value,
             "documento_id": documento["id"],
             "documento": documento["nome_original"],
-            "resultado": ResultadoAtividade.SUCCESS.value
-        }
+            "resultado": ResultadoAtividade.SUCCESS.value,
+        },
     )
 
     return FileResponse(path=caminho_arquivo, filename=documento["nome_original"])

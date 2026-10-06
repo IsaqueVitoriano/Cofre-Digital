@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class AcaoAtividade(str, Enum):
     EXPORT_DOCUMENTS = "EXPORT_DOCUMENTS"
     DOCUMENT_CREATE = "DOCUMENT_CREATE"
@@ -8,6 +9,7 @@ class AcaoAtividade(str, Enum):
     DOCUMENT_UPLOAD = "DOCUMENT_UPLOAD"
     DOCUMENT_DOWNLOAD = "DOCUMENT_DOWNLOAD"
     INTEGRITY_CHECK = "INTEGRITY_CHECK"
+
 
 class ResultadoAtividade(str, Enum):
     SUCCESS = "SUCCESS"
