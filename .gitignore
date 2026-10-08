@@ -8,9 +8,3 @@ __pycache__/
 # Configurações locais do IntelliJ/PyCharm
 .idea/
 *.iml
-
-# Ignora todos os arquivos dentro das subpastas de storage
-storage/*/*
-
-# A exceção exclusiva para os arquivos .gitkeep
-!storage/*/.gitkeep
