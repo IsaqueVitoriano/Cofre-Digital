@@ -1,0 +1,7 @@
+2026-10-08 11:00:00 INFO Iniciando processo de backup.
+2026-10-08 11:00:04 INFO Arquivo documentos.json adicionado ao backup.
+2026-10-08 11:00:05 INFO Arquivo relatorio_incidente.pdf adicionado ao backup.
+2026-10-08 11:00:07 INFO Arquivo evidencias.zip adicionado ao backup.
+2026-10-08 11:00:12 INFO Backup concluido com sucesso.
+2026-10-08 11:00:12 INFO Arquivo gerado: backup_20261008_110012.zip
+2026-10-08 11:00:13 INFO Backup armazenado no diretorio /storage/backups.

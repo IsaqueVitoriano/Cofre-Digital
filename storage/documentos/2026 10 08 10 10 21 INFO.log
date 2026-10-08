@@ -1,0 +1,7 @@
+2026-10-08 10:10:21 INFO Sistema de seguranca iniciado.
+2026-10-08 10:12:45 WARNING Detectada tentativa de login com senha incorreta.
+2026-10-08 10:12:47 WARNING Detectada segunda tentativa de login com senha incorreta.
+2026-10-08 10:13:02 ALERT Detectada terceira tentativa de login com senha incorreta.
+2026-10-08 10:13:05 INFO Conta temporariamente bloqueada por excesso de tentativas.
+2026-10-08 10:20:33 INFO Bloqueio da conta encerrado.
+2026-10-08 10:25:17 INFO Sistema de seguranca operando normalmente.

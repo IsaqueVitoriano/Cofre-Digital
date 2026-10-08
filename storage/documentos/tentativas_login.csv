@@ -1,0 +1,11 @@
+data_hora,usuario,endereco_ip,tentativa,status,localizacao
+2026-10-08 08:15:32,jose.mayson,192.168.1.10,1,sucesso,Quixada-CE
+2026-10-08 08:20:14,maria.silva,192.168.1.15,1,sucesso,Fortaleza-CE
+2026-10-08 08:25:43,joao.santos,192.168.1.20,1,falha,Quixada-CE
+2026-10-08 08:25:51,joao.santos,192.168.1.20,2,falha,Quixada-CE
+2026-10-08 08:26:02,joao.santos,192.168.1.20,3,bloqueado,Quixada-CE
+2026-10-08 08:31:17,ana.costa,192.168.1.25,1,sucesso,Sobral-CE
+2026-10-08 09:02:41,carlos.lima,10.0.0.15,1,falha,Fortaleza-CE
+2026-10-08 09:03:10,carlos.lima,10.0.0.15,2,sucesso,Fortaleza-CE
+2026-10-08 09:15:33,jose.mayson,192.168.1.10,2,sucesso,Quixada-CE
+2026-10-08 09:42:18,admin,10.0.0.1,1,sucesso,Fortaleza-CE

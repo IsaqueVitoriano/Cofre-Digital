@@ -1,0 +1,15 @@
+{
+  "id_incidente": "INC-2026-001",
+  "data_hora": "2026-10-08T14:32:15",
+  "tipo_incidente": "Tentativa de acesso não autorizado",
+  "severidade": "alto",
+  "sistema_afetado": "Servidor Web",
+  "origem": "192.168.10.45",
+  "porta": 443,
+  "protocolo": "HTTPS",
+  "descricao": "Foram identificadas múltiplas tentativas de autenticação inválida em um curto intervalo de tempo.",
+  "quantidade_tentativas": 37,
+  "acao_tomada": "Endereço de origem bloqueado temporariamente.",
+  "status": "investigando",
+  "responsavel": "Equipe de Segurança da Informação"
+}

@@ -1,0 +1,6 @@
+2026-10-08 09:01:12 INFO GET /api/documentos - Status: 200
+2026-10-08 09:01:15 INFO GET /api/documentos/15 - Status: 200
+2026-10-08 09:02:43 INFO POST /api/documentos - Status: 201
+2026-10-08 09:03:21 WARNING GET /api/documentos/999 - Status: 404
+2026-10-08 09:04:17 ERROR POST /api/documentos - Status: 500 - Erro interno do servidor.
+2026-10-08 09:05:02 INFO DELETE /api/documentos/15 - Status: 204

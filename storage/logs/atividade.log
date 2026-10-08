@@ -1,0 +1,24 @@
+2026-10-08 17:50:39,750 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=acdd51d4-a8cb-4a84-baae-f2b2ea08795a - documento=2026 10 08 08 15 32 INFO.log - resultado=SUCCESS
+2026-10-08 17:53:24,466 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=0eeb1b34-f922-4bba-9986-d9565686745f - documento=2026 10 08 09 01 12 INFO.log - resultado=SUCCESS
+2026-10-08 17:54:35,973 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=a42bad41-57f3-4529-91d7-13b80ef6e218 - documento=2026 10 08 10 10 21 INFO.log - resultado=SUCCESS
+2026-10-08 17:56:48,642 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=643e4034-7186-4b31-8b76-0103df81e210 - documento=2026 10 08 11 00 00 INFO.log - resultado=SUCCESS
+2026-10-08 17:59:34,762 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=a0c7bc1e-6401-4938-abdc-e86b883c1f4d - documento=2026 10 08 13 20 10 WARNING.log - resultado=SUCCESS
+2026-10-08 18:05:37,348 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=e8214058-2d36-4ed8-9e4e-5a91e3bcbce5 - documento=analise_incidente.json - resultado=SUCCESS
+2026-10-08 18:07:04,979 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=b3d8015f-2b13-45f8-85a8-96ceface3c80 - documento=analise_vulnerabilidades.json - resultado=SUCCESS
+2026-10-08 18:13:29,787 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=fd0ed831-0594-42f3-a389-640c6327e340 - documento=analise_incidente.json - resultado=SUCCESS
+2026-10-08 18:14:38,327 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=8fe62ec5-fba6-4758-b6bc-9576bf78543f - documento=analise_vulnerabilidades.json - resultado=SUCCESS
+2026-10-08 18:20:48,269 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=21a0f095-674f-4e01-ac57-595fe117aa7d - documento=incidentes_seguranca.csv - resultado=SUCCESS
+2026-10-08 18:22:18,777 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=7929b84e-e98f-4a6f-9514-569c9abc88d2 - documento=incidentes_seguranca.csv - resultado=SUCCESS
+2026-10-08 18:23:32,150 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=31f9aeba-3dbe-45ab-b175-bd00f9ba4001 - documento=inventario_ativos.csv - resultado=SUCCESS
+2026-10-08 18:27:04,192 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=d37866ab-0e9b-4f17-b58e-efd722337cef - documento=istockphoto-1552877787-1024x1024.jpg - resultado=SUCCESS
+2026-10-08 18:28:09,009 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=d303d8dc-9dd5-475f-874d-d9dd5b3a8d33 - documento=madartzgraphics-hacker-1944688_1280.jpg - resultado=SUCCESS
+2026-10-08 18:29:17,892 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=61fc06ee-4709-4492-a72b-e1b80e742106 - documento=pexels-ann-h-45017-38482453.jpg - resultado=SUCCESS
+2026-10-08 18:33:52,817 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=768feb27-d468-4d83-a89d-80122c7ff0ef - documento=relatorio_analise_malware.pdf - resultado=SUCCESS
+2026-10-08 18:35:10,338 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=fb174f75-9616-4a43-a1a2-4ad07ca3d99d - documento=relatorio_auditoria_acessos.pdf - resultado=SUCCESS
+2026-10-08 18:36:17,947 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=4ef0d58f-e07d-4f5a-ab24-b5128b990063 - documento=relatorio_incidente.pdf - resultado=SUCCESS
+2026-10-08 18:37:24,115 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=b6ce89ab-0b8c-4a88-ac02-68af939a9e72 - documento=relatorio_vulnerabilidades.pdf - resultado=SUCCESS
+2026-10-08 18:43:16,693 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=92f31cb1-81c3-441b-b823-be1eca293365 - documento=resultado_nmap.txt - resultado=SUCCESS
+2026-10-08 18:45:43,541 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=69f7fd65-b199-45da-9690-76773041da18 - documento=resultado_varredura_seguranca.json - resultado=SUCCESS
+2026-10-08 18:46:57,832 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=cf60cd63-ce4e-483e-a7f4-45c088f09836 - documento=tentativas_login.csv - resultado=SUCCESS
+2026-10-08 18:47:48,397 - logger_atividades - INFO - acao=DOCUMENT_CREATE - documento_id=a042da83-6a98-4b1e-b1cb-4de99b1f5ce8 - documento=vulnerabilidades_identificadas.csv - resultado=SUCCESS
+2026-10-08 20:20:10,764 - logger_atividades - INFO - acao=EXPORT_DOCUMENTS - documento_id=- - documento=todos - resultado=SUCCESS

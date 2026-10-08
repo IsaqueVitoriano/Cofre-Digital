@@ -1,0 +1,7 @@
+id,data_deteccao,ativo,vulnerabilidade,severidade,origem,status
+V001,2026-10-08,SRV-WEB-01,Servico desatualizado,alta,Scanner de vulnerabilidades,aberta
+V002,2026-10-08,SRV-DB-01,Senha fraca,critica,Auditoria de seguranca,em_analise
+V003,2026-10-08,PC-ADM-01,Software desatualizado,media,Scanner de vulnerabilidades,corrigida
+V004,2026-10-08,SRV-WEB-01,Porta desnecessariamente exposta,media,Nmap,corrigida
+V005,2026-10-08,SRV-BKP-01,Configuracao inadequada,baixa,Auditoria de seguranca,aberta
+V006,2026-10-08,FIREWALL-01,Regra de acesso permissiva,alta,Auditoria de seguranca,em_analise

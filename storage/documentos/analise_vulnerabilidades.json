@@ -1,0 +1,27 @@
+{
+    "id_analise": "VULN-2026-008",
+    "data_analise": "2026-10-08T14:30:00",
+    "sistema": "Servidor de testes",
+    "responsavel": "Equipe de Segurança",
+    "vulnerabilidades": [
+        {
+            "id": "VULN-001",
+            "tipo": "Servico desatualizado",
+            "severidade": "alta",
+            "status": "aberta"
+        },
+        {
+            "id": "VULN-002",
+            "tipo": "Porta desnecessariamente exposta",
+            "severidade": "media",
+            "status": "corrigida"
+        },
+        {
+            "id": "VULN-003",
+            "tipo": "Configuracao insegura",
+            "severidade": "media",
+            "status": "em_analise"
+        }
+    ],
+    "resultado": "Foram identificadas 3 vulnerabilidades durante a analise."
+}
