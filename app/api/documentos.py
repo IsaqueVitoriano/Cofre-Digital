@@ -114,7 +114,10 @@ def criar_documento(
         adicionar(DOCUMENTOS_FILE, dados)
     except OSError:
         logger_api.warning("Falha ao adicionar documento: %s", documento_id)
-        raise
+        raise HTTPException(
+            status_code= status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Falha ao salvar os metadados do documento {documento_id}"
+                        )
 
     logger_atividades.info(
         "Documento criado",
