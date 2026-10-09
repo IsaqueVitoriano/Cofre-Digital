@@ -27,3 +27,4 @@
 2026-10-08 20:20:16,147 - logger_api - INFO - O arquivo JSON backups.json foi criado.
 2026-10-08 20:20:16,148 - logger_api - DEBUG - O arquivo backups.json foi atualizado com 1 registro(s)
 2026-10-08 20:20:16,148 - logger_api - INFO - backup realizado com sucesso
+2026-10-09 09:33:24,641 - logger_api - INFO - Sistema de logging inicializado com sucesso!
