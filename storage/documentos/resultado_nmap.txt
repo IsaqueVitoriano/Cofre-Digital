@@ -1,0 +1,27 @@
+Nmap Security Scan
+====================
+
+Data: 08/10/2026
+Alvo: servidor-teste.local
+Ferramenta: Nmap
+Versao: 7.95
+
+PORT     STATE    SERVICE
+22/tcp   open     ssh
+80/tcp   open     http
+443/tcp  open     https
+3306/tcp open     mysql
+8080/tcp filtered http-proxy
+
+Host is up.
+
+Resumo:
+- 4 portas identificadas como abertas.
+- Servico SSH encontrado na porta 22.
+- Servico HTTP encontrado na porta 80.
+- Servico HTTPS encontrado na porta 443.
+- Servico MySQL encontrado na porta 3306.
+
+Observacao:
+Este arquivo representa um resultado ficticio de uma ferramenta de analise
+e foi criado exclusivamente para testes academicos.

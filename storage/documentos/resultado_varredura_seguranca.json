@@ -1,0 +1,33 @@
+{
+  "id_varredura": "SCAN-2026-010",
+  "data_hora": "2026-10-08T15:10:00",
+  "ferramenta": "Security Scanner",
+  "alvo": "192.168.10.0/24",
+  "tipo_varredura": "Varredura de vulnerabilidades",
+  "status": "concluida",
+  "dispositivos_analisados": 24,
+  "vulnerabilidades_encontradas": {
+    "criticas": 1,
+    "altas": 3,
+    "medias": 7,
+    "baixas": 12
+  },
+  "principais_vulnerabilidades": [
+    {
+      "codigo": "CVE-2026-0001",
+      "severidade": "critica",
+      "descricao": "Serviço desatualizado com vulnerabilidade conhecida."
+    },
+    {
+      "codigo": "CVE-2026-0025",
+      "severidade": "alta",
+      "descricao": "Configuração insegura identificada no serviço de rede."
+    }
+  ],
+  "recomendacao": "Atualizar os serviços afetados e revisar as configurações de segurança.",
+  "responsavel": "Equipe de Segurança da Informação"
+}
+
+
+
+

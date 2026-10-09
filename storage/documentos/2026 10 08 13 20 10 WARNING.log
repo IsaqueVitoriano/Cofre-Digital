@@ -1,0 +1,8 @@
+2026-10-08 13:20:10 WARNING Incidente #001 detectado: tentativa de acesso nao autorizado.
+2026-10-08 13:20:15 INFO Incidente #001 classificado como severidade MEDIA.
+2026-10-08 13:21:03 INFO Equipe de seguranca iniciou analise do incidente #001.
+2026-10-08 13:35:42 WARNING Incidente #002 detectado: atividade suspeita no servidor.
+2026-10-08 13:36:10 INFO Incidente #002 classificado como severidade ALTA.
+2026-10-08 13:50:27 INFO Medidas de contencao aplicadas ao incidente #002.
+2026-10-08 14:05:31 INFO Incidente #002 encerrado apos analise.
+2026-10-08 14:10:00 INFO Relatorio do incidente #002 gerado com sucesso.

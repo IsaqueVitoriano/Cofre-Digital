@@ -1,0 +1,8 @@
+id_ativo,nome_ativo,tipo,endereco_ip,sistema_operacional,status,nivel_risco
+001,SRV-WEB-01,Servidor,192.168.1.10,Linux,ativo,medio
+002,SRV-DB-01,Servidor,192.168.1.20,Linux,ativo,alto
+003,PC-ADM-01,Computador,192.168.1.31,Windows,ativo,baixo
+004,PC-SEC-01,Computador,192.168.1.32,Linux,ativo,medio
+005,SRV-BKP-01,Servidor,192.168.1.40,Linux,ativo,medio
+006,FIREWALL-01,Firewall,192.168.1.1,Appliance,ativo,alto
+007,ROUTER-01,Roteador,192.168.1.254,Appliance,ativo,alto
