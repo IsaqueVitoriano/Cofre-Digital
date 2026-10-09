@@ -8,3 +8,6 @@ __pycache__/
 # Configurações locais do IntelliJ/PyCharm
 .idea/
 *.iml
+
+
+__init__.py
